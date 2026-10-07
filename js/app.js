@@ -82,3 +82,36 @@ const videojuegos = [
 ];
 
 console.table(videojuegos);
+
+// Reto 3 Listado 1 - Todos los elementos
+
+const LIMITE_ANIO = 2023; //constante para el año
+
+console.log("--- Todos los videojuegos ---");
+
+for (const videojuego of videojuegos) {// for of
+  const etiqueta = videojuego.anio <= LIMITE_ANIO ? "clásico" : "reciente"; // si el año es menor a 2023 clasico, sino reciente
+  console.log(
+    `${videojuego.id}. ${videojuego.titulo} - ${etiqueta}` //mostramos
+  );
+
+}
+
+
+
+// Listado 2 - Los que cumplen una condicion
+
+let cumplenCondicion = 0;
+
+console.log("========== FILTRO ==========");
+
+for(let videojuego of videojuegos){ //For of 
+
+    if(videojuego.disponible == true && videojuego.anio <= 2021) { //si el esta disponible y el año es 2021 o menor
+                console.log(`${videojuego.id}. ${videojuego.titulo} - ${videojuego.anio}`); //mostramos
+                  cumplenCondicion++;//actualizamos el contador
+
+    }
+}
+
+console.log("Cumplen la condicion: "+ cumplenCondicion); //mostramos el numero de juegos que cumplen la condicion
