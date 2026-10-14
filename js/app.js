@@ -172,6 +172,22 @@ function contarPorCategoria(videojuegos) {
     console.log(`Otros: ${otros}`);
 }
 
+//Reto Sesión 8
+function buscarPorTexto(lista, texto) {
+
+    console.log(`--- Buscando: ${texto} ---`);
+
+    for (const videojuego of lista) {
+
+        if (videojuego.titulo.toLowerCase().includes(texto.toLowerCase())) {
+
+            console.log(
+                `${videojuego.id}. ${videojuego.titulo}`
+            );
+        }
+    }
+}
+
 // LLAMADA DE FUNCIONES
 console.log("========== RESULTADOS ==========");
 
@@ -185,3 +201,5 @@ console.log(`Encontrados hasta 2023: ${resultado2023}`);
 
 contarPorCategoria(videojuegos);
 
+buscarPorTexto(videojuegos, "God of War");
+buscarPorTexto(videojuegos, "mario");
