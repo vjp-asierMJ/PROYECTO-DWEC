@@ -4,7 +4,7 @@ const videojuegos = [
         titulo: "The Legend of Zelda: Echoes of Time",
         genero: "Aventura",
         plataforma: "Nintendo Switch",
-        anio: 2024,
+        fecha: "2024-09-26",
         disponible: true
     },
     {
@@ -12,7 +12,7 @@ const videojuegos = [
         titulo: "Cyberpunk 2077",
         genero: "RPG",
         plataforma: "PC",
-        anio: 2020,
+        fecha: "2020-12-10",
         disponible: true
     },
     {
@@ -20,15 +20,15 @@ const videojuegos = [
         titulo: "EA Sports FC 26",
         genero: "Deportes",
         plataforma: "PlayStation 5",
-        anio: 2025,
-        disponible: false
+        fecha: "2025-09-26",
+        disponible: true
     },
     {
         id: 4,
         titulo: "Minecraft",
         genero: "Sandbox",
         plataforma: "Xbox Series X",
-        anio: 2011,
+        fecha: "2011-11-18",
         disponible: true
     },
     {
@@ -36,15 +36,15 @@ const videojuegos = [
         titulo: "Hades II",
         genero: "Acción",
         plataforma: "PC",
-        anio: 2025,
+        fecha: "2025-09-25",
         disponible: true
     },
     {
         id: 6,
-        titulo: "Baldur's Gate 3",
-        genero: "RPG",
+        titulo: "GTA VI",
+        genero: "Acción",
         plataforma: "PlayStation 5",
-        anio: 2023,
+        fecha: "2026-11-19",
         disponible: false
     },
     {
@@ -52,7 +52,7 @@ const videojuegos = [
         titulo: "Forza Horizon 5",
         genero: "Carreras",
         plataforma: "Xbox Series X",
-        anio: 2021,
+        fecha: "2021-11-09",
         disponible: true
     },
     {
@@ -60,7 +60,7 @@ const videojuegos = [
         titulo: "Super Mario Bros. Wonder",
         genero: "Plataformas",
         plataforma: "Nintendo Switch",
-        anio: 2023,
+        fecha: "2023-10-20",
         disponible: true
     },
     {
@@ -68,7 +68,7 @@ const videojuegos = [
         titulo: "Red Dead Redemption 2",
         genero: "Acción",
         plataforma: "PC",
-        anio: 2018,
+        fecha: "2019-11-05",
         disponible: false
     },
     {
@@ -76,7 +76,7 @@ const videojuegos = [
         titulo: "Marvel's Spider-Man 2",
         genero: "Acción",
         plataforma: "PlayStation 5",
-        anio: 2023,
+        fecha: "2023-10-20",
         disponible: true
     }
 ];
@@ -184,3 +184,4 @@ const resultado2023 = filtrar(videojuegos, 2023);
 console.log(`Encontrados hasta 2023: ${resultado2023}`);
 
 contarPorCategoria(videojuegos);
+
