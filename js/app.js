@@ -172,20 +172,21 @@ function contarPorCategoria(videojuegos) {
     console.log(`Otros: ${otros}`);
 }
 
-//Reto Sesión 8
+// ========== SESION 8 - PARTE B - RETO 2 ==========
 function buscarPorTexto(lista, texto) {
 
-    console.log(`--- Buscando: ${texto} ---`);
+    const buscado = texto.toLowerCase();
+    const resultado = [];
 
-    for (const videojuego of lista) {
+    for (const elemento of lista) {
 
-        if (videojuego.titulo.toLowerCase().includes(texto.toLowerCase())) {
-
-            console.log(
-                `${videojuego.id}. ${videojuego.titulo}`
-            );
+        // Si el título contiene el texto buscado, lo añadimos al resultado.
+        if (elemento.titulo.toLowerCase().includes(buscado)) {
+            resultado.push(elemento);
         }
     }
+
+    return resultado;
 }
 
 // LLAMADA DE FUNCIONES
