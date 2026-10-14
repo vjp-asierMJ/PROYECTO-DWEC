@@ -210,6 +210,26 @@ function anadir(lista, elemento) {
     return elemento.id;
 }
 
+function eliminarPorId(lista, id) {
+
+    // Recorremos la lista con un for clásico.
+    for (let i = 0; i < lista.length; i++) {
+
+        // Comprobamos si el id coincide.
+        if (lista[i].id === id) {
+
+            // Eliminamos el elemento encontrado.
+            lista.splice(i, 1);
+
+            // Devolvemos true porque se ha eliminado.
+            return true;
+        }
+    }
+
+    // Si no encontramos el id, devolvemos false.
+    return false;
+}
+
 
 // LLAMADA DE FUNCIONES
 console.log("========== RESULTADOS ==========");
@@ -239,3 +259,19 @@ const nuevoId = anadir(videojuegos, nuevoVideojuego);
 
 console.log("ID asignado:", nuevoId);
 console.table(videojuegos);
+
+//LLAMADAS SESIÓN 8 - PARTE B - RETO 2
+console.table(buscarPorTexto(videojuegos, "m"));
+
+anadir(videojuegos, {
+    titulo: "Uncharted",
+    genero: "Aventura",
+    plataforma: "PlayStation 5",
+    fecha: "2022-01-28",
+    disponible: true
+});
+
+eliminarPorId(videojuegos, 3);  // true
+eliminarPorId(videojuegos, 99); // false
+
+listar(videojuegos);
