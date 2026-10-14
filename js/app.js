@@ -189,6 +189,28 @@ function buscarPorTexto(lista, texto) {
     return resultado;
 }
 
+function anadir(lista, elemento) {
+
+    let maxId = 0;
+
+    // Buscamos el id más alto de la lista.
+    for (const videojuego of lista) {
+        if (videojuego.id > maxId) {
+            maxId = videojuego.id;
+        }
+    }
+
+    // Asignamos al elemento el siguiente id.
+    elemento.id = maxId + 1;
+
+    // Añadimos el elemento a la lista.
+    lista.push(elemento);
+
+    // Devolvemos el id asignado.
+    return elemento.id;
+}
+
+
 // LLAMADA DE FUNCIONES
 console.log("========== RESULTADOS ==========");
 
@@ -204,3 +226,16 @@ contarPorCategoria(videojuegos);
 
 buscarPorTexto(videojuegos, "God of War");
 buscarPorTexto(videojuegos, "mario");
+
+const nuevoVideojuego = {
+    titulo: "GTA VII",
+    genero: "Acción",
+    plataforma: "PlayStation 6",
+    fecha: "2030-11-19",
+    disponible: false
+};
+
+const nuevoId = anadir(videojuegos, nuevoVideojuego);
+
+console.log("ID asignado:", nuevoId);
+console.table(videojuegos);
