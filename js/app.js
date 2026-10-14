@@ -244,6 +244,7 @@ console.log(`Encontrados hasta 2023: ${resultado2023}`);
 
 contarPorCategoria(videojuegos);
 
+//LLAMADAS SESIÓN 8 - PARTE B - RETO 2
 buscarPorTexto(videojuegos, "God of War");
 buscarPorTexto(videojuegos, "mario");
 
@@ -260,7 +261,7 @@ const nuevoId = anadir(videojuegos, nuevoVideojuego);
 console.log("ID asignado:", nuevoId);
 console.table(videojuegos);
 
-//LLAMADAS SESIÓN 8 - PARTE B - RETO 2
+
 console.table(buscarPorTexto(videojuegos, "m"));
 
 anadir(videojuegos, {
@@ -274,4 +275,4 @@ anadir(videojuegos, {
 eliminarPorId(videojuegos, 3);  // true
 eliminarPorId(videojuegos, 99); // false
 
-listar(videojuegos);
+listarTodos(videojuegos);
