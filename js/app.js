@@ -230,6 +230,40 @@ function eliminarPorId(lista, id) {
     return false;
 }
 
+//funcion estadistica
+function estadisticas(lista) {
+
+    if (lista.length === 0) { //si el array esta vacio lo devuelve
+        console.warn("La lista de videojuegos está vacía.");
+        return;
+    }
+
+    let suma = 0;
+    let maximo = lista[0];
+
+    for (const videojuego of lista) {// recorremos el array de videojuegos
+
+        // Sumamos el campo numérico: id
+        suma += videojuego.id;
+
+        // Comprobamos si tiene un id mayor
+        if (videojuego.id > maximo.id) {
+            maximo = videojuego; //guardamos el maximo
+        }
+    }
+
+    // Calculamos la media
+    const media = suma / lista.length;
+
+    // Mostramos los resultados
+    console.log("--- Estadísticas de videojuegos ---");
+    console.log("Total de los ID:", suma);
+    console.log("Media de los ID:", media.toFixed(1));
+    console.log("Videojuego con el ID más alto:", maximo.titulo);
+    console.log("ID más alto:", maximo.id);
+}
+
+
 
 // LLAMADA DE FUNCIONES
 console.log("========== RESULTADOS ==========");
@@ -276,3 +310,5 @@ eliminarPorId(videojuegos, 3);  // true
 eliminarPorId(videojuegos, 99); // false
 
 listarTodos(videojuegos);
+
+estadisticas(videojuegos);
