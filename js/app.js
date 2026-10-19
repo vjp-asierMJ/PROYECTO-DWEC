@@ -129,10 +129,10 @@ function filtrar(videojuegos, limite) {//recibe el array y el limite del año
     return encontrados;
 }
 
-
+//funcion para contar por categoria
 function contarPorCategoria(videojuegos) {
 
-    let aventura = 0;
+    let aventura = 0; //declaramos los distintos tipos de videojuegos
     let rpg = 0;
     let accion = 0;
     let deportes = 0;
@@ -173,10 +173,11 @@ function contarPorCategoria(videojuegos) {
 }
 
 // ========== SESION 8 - PARTE B - RETO 2 ==========
+//funcion para buscar un videojuego
 function buscarPorTexto(lista, texto) {
 
-    const buscado = texto.toLowerCase();
-    const resultado = [];
+    const buscado = texto.toLowerCase(); //recogemos el titulo
+    const resultado = []; //creamos un array para guardar los titulos encontrados
 
     for (const elemento of lista) {
 
@@ -188,6 +189,7 @@ function buscarPorTexto(lista, texto) {
 
     return resultado;
 }
+//funcion para añadir un videojuego
 
 function anadir(lista, elemento) {
 
@@ -209,7 +211,7 @@ function anadir(lista, elemento) {
     // Devolvemos el id asignado.
     return elemento.id;
 }
-
+//funcion para eliminar un videojuego por el id
 function eliminarPorId(lista, id) {
 
     // Recorremos la lista con un for clásico.
@@ -230,7 +232,7 @@ function eliminarPorId(lista, id) {
     return false;
 }
 
-//funcion estadistica
+//funcion para mostrar las estadisticas
 
 function estadisticas(lista) {
 
@@ -271,7 +273,7 @@ function estadisticas(lista) {
 
 // LLAMADA DE FUNCIONES
 console.log("========== RESULTADOS ==========");
-
+//listar todo
 listarTodos(videojuegos);
 
 const resultado2021 = filtrar(videojuegos, 2021);
@@ -280,12 +282,15 @@ console.log(`Encontrados hasta 2021: ${resultado2021}`);
 const resultado2023 = filtrar(videojuegos, 2023);
 console.log(`Encontrados hasta 2023: ${resultado2023}`);
 
+//contar por categoria
 contarPorCategoria(videojuegos);
 
 //LLAMADAS SESIÓN 8 - PARTE B - RETO 2
+//llamada de buscarPorTexto
 buscarPorTexto(videojuegos, "God of War");
 buscarPorTexto(videojuegos, "mario");
 
+//creamos un nuevo videojuego
 const nuevoVideojuego = {
     titulo: "GTA VII",
     genero: "Acción",
@@ -294,9 +299,12 @@ const nuevoVideojuego = {
     disponible: false
 };
 
+//llamamos a la funcion añadir
 const nuevoId = anadir(videojuegos, nuevoVideojuego);
 
 console.log("ID asignado:", nuevoId);
+
+//mostramos el array en modo tabla
 console.table(videojuegos);
 
 
@@ -309,10 +317,12 @@ anadir(videojuegos, {
     fecha: "2022-01-28",
     disponible: true
 });
-
+//llamada e eliminar por id
 eliminarPorId(videojuegos, 3);  // true
 eliminarPorId(videojuegos, 99); // false
 
+//llamada a listar todo
 listarTodos(videojuegos);
 
+//llamada a la funcion de estadisticas
 estadisticas(videojuegos);
