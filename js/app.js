@@ -87,7 +87,7 @@ console.table(videojuegos);
 // ========== SESION 7 - PARTE B - RETO 2 ==========
 
 
-//1.- Listar todo
+ //1.- Listar todo
 
 function listarTodos(videojuegos) {
 
@@ -97,35 +97,50 @@ function listarTodos(videojuegos) {
 
     for (const videojuego of videojuegos) {
 
-        const etiqueta = videojuego.anio <= LIMITE_ANIO
+        // Extraemos el año de la fecha y lo convertimos en número.
+        const anio = Number(videojuego.fecha.substring(0, 4));
+
+        // Si el año es menor o igual a 2023, lo clasificamos como clásico.
+        // Si es mayor, lo clasificamos como reciente.
+        const etiqueta = anio <= LIMITE_ANIO
             ? "clásico"
             : "reciente";
 
+        // Mostramos el ID, el título y la etiqueta del videojuego.
         console.log(
             `${videojuego.id}. ${videojuego.titulo} - ${etiqueta}`
         );
     }
 }
+
+
 //2.- Filtrar
 
 function filtrar(videojuegos, limite) {//recibe el array y el limite del año
 
-    let encontrados = 0;
+    let encontrados = 0; //contador de videojuegos encontrados
 
     console.log(`--- Videojuegos disponibles hasta ${limite} ---`);
 
     for (const videojuego of videojuegos) {//recorre el array
 
-        if (videojuego.disponible && videojuego.anio <= limite) { //si esta disponible y el año es menor al limite
+        // Extraemos el año de la fecha y lo convertimos en número.
+        const anio = Number(videojuego.fecha.substring(0, 4));
 
+        // Comprobamos que el videojuego esté disponible
+        // y que su año sea menor o igual al límite indicado.
+        if (videojuego.disponible && anio <= limite) {
+
+            // Mostramos el ID, el título y el año del videojuego.
             console.log(
-                `${videojuego.id}. ${videojuego.titulo} - ${videojuego.anio}` //lo muestra
+                `${videojuego.id}. ${videojuego.titulo} - ${anio}`
             );
 
-            encontrados++; //actualiza los encontrados
+            encontrados++; //actualiza el contador de encontrados
         }
     }
 
+    // Devolvemos el número total de videojuegos encontrados.
     return encontrados;
 }
 
