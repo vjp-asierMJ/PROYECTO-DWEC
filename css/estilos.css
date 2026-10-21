@@ -1,0 +1,79 @@
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            background-color: #f4f6f9;
+            color: #222;
+        }
+
+        header {
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #resumen,
+        #estadisticas {
+            line-height: 1.6;
+        }
+
+        /* Cuadrícula adaptable de videojuegos */
+        #listado {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fill,
+                minmax(240px, 1fr)
+            );
+            gap: 20px;
+        }
+
+        /* Tarjeta individual */
+        .tarjeta {
+            background-color: white;
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #0002;
+        }
+
+        .tarjeta h2 {
+            font-size: 1.2rem;
+            margin-top: 0;
+        }
+
+        .tarjeta p {
+            line-height: 1.5;
+        }
+
+        /* Etiquetas de disponibilidad */
+        .estado {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .disponible {
+            background-color: #d8f5df;
+            color: #176b30;
+        }
+
+        .no-disponible {
+            background-color: #ffe0e0;
+            color: #a12323;
+        }
+
+        .vacio {
+            grid-column: 1 / -1;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 14px;
+            }
+        }

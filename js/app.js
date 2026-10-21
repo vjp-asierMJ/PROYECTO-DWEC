@@ -87,7 +87,7 @@ console.table(videojuegos);
 // ========== SESION 7 - PARTE B - RETO 2 ==========
 
 
- //1.- Listar todo
+//1.- Listar todo
 
 function listarTodos(videojuegos) {
 
@@ -97,50 +97,35 @@ function listarTodos(videojuegos) {
 
     for (const videojuego of videojuegos) {
 
-        // Extraemos el año de la fecha y lo convertimos en número.
-        const anio = Number(videojuego.fecha.substring(0, 4));
-
-        // Si el año es menor o igual a 2023, lo clasificamos como clásico.
-        // Si es mayor, lo clasificamos como reciente.
-        const etiqueta = anio <= LIMITE_ANIO
+        const etiqueta = videojuego.anio <= LIMITE_ANIO
             ? "clásico"
             : "reciente";
 
-        // Mostramos el ID, el título y la etiqueta del videojuego.
         console.log(
             `${videojuego.id}. ${videojuego.titulo} - ${etiqueta}`
         );
     }
 }
-
-
 //2.- Filtrar
 
 function filtrar(videojuegos, limite) {//recibe el array y el limite del año
 
-    let encontrados = 0; //contador de videojuegos encontrados
+    let encontrados = 0;
 
     console.log(`--- Videojuegos disponibles hasta ${limite} ---`);
 
     for (const videojuego of videojuegos) {//recorre el array
 
-        // Extraemos el año de la fecha y lo convertimos en número.
-        const anio = Number(videojuego.fecha.substring(0, 4));
+        if (videojuego.disponible && videojuego.anio <= limite) { //si esta disponible y el año es menor al limite
 
-        // Comprobamos que el videojuego esté disponible
-        // y que su año sea menor o igual al límite indicado.
-        if (videojuego.disponible && anio <= limite) {
-
-            // Mostramos el ID, el título y el año del videojuego.
             console.log(
-                `${videojuego.id}. ${videojuego.titulo} - ${anio}`
+                `${videojuego.id}. ${videojuego.titulo} - ${videojuego.anio}` //lo muestra
             );
 
-            encontrados++; //actualiza el contador de encontrados
+            encontrados++; //actualiza los encontrados
         }
     }
 
-    // Devolvemos el número total de videojuegos encontrados.
     return encontrados;
 }
 
@@ -283,6 +268,176 @@ function estadisticas(lista) {
     console.log("Valor más alto:", maximo.id);
 }
 
+// Función para convertir una fecha de AAAA-MM-DD a DD/MM/AAAA
+function formatearFecha(fecha) {
+    const partes = fecha.split("-");
+
+    return partes[2] + "/" + partes[1] + "/" + partes[0];
+}
+
+/*
+====================================================
+APARTADO B - FUNCIONES PARA MOSTRAR EL CONTENIDO
+EN LA PÁGINA WEB
+====================================================
+*/
+
+
+// B1. Crear una tarjeta para un videojuego
+function crearTarjeta(videojuego) {
+
+    // Creamos un artículo que será la tarjeta.
+    const tarjeta = document.createElement("article");
+
+    // Añadimos la clase CSS.
+    tarjeta.classList.add("tarjeta");
+
+    // Guardamos el ID en la tarjeta para identificarla.
+    tarjeta.dataset.id = videojuego.id;
+
+
+    // Creamos y mostramos el título del videojuego.
+    const titulo = document.createElement("h2");
+    titulo.textContent = videojuego.titulo;
+
+    tarjeta.append(titulo);
+
+
+    // Creamos un párrafo para el género.
+    const genero = document.createElement("p");
+    genero.textContent = "Género: " + videojuego.genero;
+
+    tarjeta.append(genero);
+
+
+    // Creamos un párrafo para la plataforma.
+    const plataforma = document.createElement("p");
+    plataforma.textContent = "Plataforma: " + videojuego.plataforma;
+
+    tarjeta.append(plataforma);
+
+
+    // Creamos un párrafo para la fecha de lanzamiento.
+    const fecha = document.createElement("p");
+    fecha.textContent =
+        "Fecha de lanzamiento: " +
+        formatearFecha(videojuego.fecha);
+
+    tarjeta.append(fecha);
+
+
+    // Creamos la etiqueta del estado de disponibilidad.
+    const estado = document.createElement("span");
+
+    // Aplicamos una clase dependiendo de si está disponible.
+    estado.classList.add(
+        "estado",
+        videojuego.disponible
+            ? "disponible"
+            : "no-disponible"
+    );
+
+    // Mostramos el texto correspondiente.
+    estado.textContent = videojuego.disponible
+        ? "Disponible"
+        : "No disponible";
+
+    tarjeta.append(estado);
+
+
+    // Devolvemos la tarjeta completa.
+    return tarjeta;
+}
+
+
+// B2. Pintar una lista de videojuegos
+function pintar(lista) {
+
+    // Seleccionamos el contenedor de las tarjetas.
+    const listado = document.querySelector("#listado");
+
+    // Vaciamos el contenedor para evitar duplicados.
+    listado.replaceChildren();
+
+    // Si la lista está vacía, mostramos un mensaje.
+    if (lista.length === 0) {
+        const mensaje = document.createElement("p");
+
+        mensaje.classList.add("vacio");
+        mensaje.textContent = "No hay videojuegos para mostrar.";
+
+        listado.append(mensaje);
+        return;
+    }
+
+    // Recorremos cada videojuego.
+    for (const videojuego of lista) {
+
+        // Creamos su tarjeta y la añadimos al contenedor.
+        listado.append(crearTarjeta(videojuego));
+    }
+}
+
+
+// B3. Mostrar el resumen de la colección
+function mostrarResumen(lista) {
+
+    const resumen = document.querySelector("#resumen");
+
+    // Contamos los videojuegos disponibles.
+    let disponibles = 0;
+
+    for (const videojuego of lista) {
+        if (videojuego.disponible) {
+            disponibles++;
+        }
+    }
+
+    // Calculamos cuántos no están disponibles.
+    const noDisponibles = lista.length - disponibles;
+
+    // Mostramos el resumen.
+    resumen.textContent =
+        "Total de videojuegos: " + lista.length +
+        " | Disponibles: " + disponibles +
+        " | No disponibles: " + noDisponibles;
+}
+
+
+// B4. Mostrar las estadísticas de géneros en la página
+function mostrarEstadisticasEnPagina(lista) {
+
+    const estadisticasPagina =
+        document.querySelector("#estadisticas");
+
+    // Creamos un objeto para contar cada género.
+    const generos = {};
+
+    // Recorremos los videojuegos.
+    for (const videojuego of lista) {
+
+        const genero = videojuego.genero;
+
+        // Inicializamos el contador si el género no existe.
+        if (generos[genero] === undefined) {
+            generos[genero] = 0;
+        }
+
+        // Incrementamos el contador.
+        generos[genero]++;
+    }
+
+    // Convertimos los resultados en una cadena de texto.
+    const textoGeneros = Object.entries(generos)
+        .map(([genero, cantidad]) => genero + ": " + cantidad)
+        .join(" | ");
+
+    // Mostramos los resultados en la página.
+    estadisticasPagina.textContent =
+        "Videojuegos por género: " + textoGeneros;
+}
+
+
 
 
 
@@ -341,3 +496,19 @@ listarTodos(videojuegos);
 
 //llamada a la funcion de estadisticas
 estadisticas(videojuegos);
+
+/*
+====================================================
+INICIO DE LA APLICACIÓN WEB
+====================================================
+*/
+
+
+// Mostramos los 10 videojuegos originales en tarjetas.
+pintar(videojuegos);
+
+// Mostramos el resumen de disponibilidad.
+mostrarResumen(videojuegos);
+
+// Mostramos las cantidades por género.
+mostrarEstadisticasEnPagina(videojuegos);
