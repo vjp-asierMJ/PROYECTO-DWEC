@@ -497,11 +497,8 @@ listarTodos(videojuegos);
 //llamada a la funcion de estadisticas
 estadisticas(videojuegos);
 
-/*
-====================================================
-INICIO DE LA APLICACIÓN WEB
-====================================================
-*/
+
+// INICIO DE LA APLICACIÓN WEB
 
 
 // Mostramos los 10 videojuegos originales en tarjetas.
@@ -509,6 +506,113 @@ pintar(videojuegos);
 
 // Mostramos el resumen de disponibilidad.
 mostrarResumen(videojuegos);
+
+// Mostramos las cantidades por género.
+mostrarEstadisticasEnPagina(videojuegos);
+
+/*
+===========================
+SESIÓN 11 -  PARTE B/RETO 2
+===========================
+*/
+
+//B2: ESTADO Y ACTUALIZAR
+//Variables de estado
+let textoBuscado = "";
+let criterio = "ninguno";
+
+//Ordena una COPIA de la lista según el criterio
+function ordenar(lista, criterio) {
+
+    //Copiar para no modificar el array original
+    const copia = [...lista];
+
+    if(criterio === "nombre") {
+        //Texto: localeCompare
+        copia.sort((a,b) => a.titulo.localeCompare(b.titulo));
+    } else if (criterio === "numero") {
+        //Número: resta
+        copia.sort((a, b) => a.id - b.id);
+    }
+
+    //Con "ninguno" se devuelve la copia sin ordenar
+    return copia;
+}
+
+//Buscar, ordenar y pintar
+function actualizar() {
+    const encontrados = buscarPorTexto(videojuegos, textoBuscado);
+    const ordenados = ordenar(encontrados, criterio);
+    pintar(ordenados);
+}
+
+//B3: EVENTOS
+//Primero se cogen los elementos del HTML por su id
+const buscador = document.querySelector("#buscador");
+const botonNombre = document.querySelector("#ordenNombre");
+const botonNumero = document.querySelector("#ordenNumero");
+
+//Buscador: se ejecuta cada vez que escribes
+buscador.addEventListener("input", function() {
+    textoBuscado = buscador.value;
+    actualizar();
+});
+
+//Botón de ordenar por nombre
+botonNombre.addEventListener("click", function() {
+    criterio = "nombre";
+    actualizar();
+});
+
+//Botón de ordenar por número
+botonNumero.addEventListener("click", function() {
+    criterio = "numero";
+    actualizar();
+});
+
+// Mostramos los videojuegos en tarjetas (con búsqueda y orden)
+actualizar();
+
+// Mostramos el resumen de disponibilidad.
+mostrarResumen(videojuegos);
+
+// Mostramos las cantidades por género.
+mostrarEstadisticasEnPagina(videojuegos);
+
+/*
+===========================
+SESIÓN 11 -  PARTE C/RETO 3
+===========================
+*/
+
+function pintarResumen(mostrados) {
+    const resumen = document.querySelector("#resumen");
+
+    if(mostrados > 0) {
+        //Hay resultados: "Mostrando 4 de 10 videojuegos"
+        resumen.textContent =
+            "Mostrando " + mostrados +
+            " de " + videojuegos.length +
+            " videojuegos";
+    } else {
+        //No hay resultados: mostraremos el texto buscado
+        resumen.textContent =
+            "No hay videojuegos que contengan <<" +
+            textoBuscado + ">>";
+    }
+}
+
+//LLamamos dentro de actualizar
+function actualizar() {
+    const encontrados = buscarPorTexto(videojuegos, textoBuscado);
+    const ordenados = ordenar(encontrados, criterio);
+    pintar(ordenados);
+    pintarResumen(ordenados.length);   // <-- nueva
+    //Le pasamos ordenados.length, que es el número de tarjetas que se están mostrando.
+}
+
+// Mostramos los videojuegos, con búsqueda, orden y resumen.
+actualizar();
 
 // Mostramos las cantidades por género.
 mostrarEstadisticasEnPagina(videojuegos);
