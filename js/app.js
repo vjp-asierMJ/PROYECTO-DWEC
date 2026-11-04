@@ -558,17 +558,6 @@ buscador.addEventListener("input", function() {
     actualizar();
 });
 
-//Botón de ordenar por nombre
-botonNombre.addEventListener("click", function() {
-    criterio = "nombre";
-    actualizar();
-});
-
-//Botón de ordenar por número
-botonNumero.addEventListener("click", function() {
-    criterio = "numero";
-    actualizar();
-});
 
 // Mostramos los videojuegos en tarjetas (con búsqueda y orden)
 actualizar();
@@ -616,3 +605,134 @@ actualizar();
 
 // Mostramos las cantidades por género.
 mostrarEstadisticasEnPagina(videojuegos);
+
+/*
+====================================================
+PARTE A - RETO 1
+FUNCIONES PARA GUARDAR Y LEER COOKIES
+====================================================
+*/
+
+// A1. Guardar una cookie
+function guardarCookie(nombre, valor, dias) {
+
+    // Convertimos los días a segundos.
+    const segundos = dias * 24 * 60 * 60;
+
+    // Codificamos el texto para evitar problemas
+    // con espacios o caracteres especiales.
+    const texto = encodeURIComponent(valor);
+
+    // Creamos la cookie indicando:
+    // nombre, valor, duración y ruta.
+    document.cookie =
+        `${nombre}=${texto}; max-age=${segundos}; path=/`;
+}
+
+/*
+----------------------------------------------------
+Lee una cookie según su nombre.
+Devuelve el valor encontrado o null si no existe.
+----------------------------------------------------
+*/
+function leerCookie(nombre) {
+
+    // Obtenemos todas las cookies y las
+    // convertimos en un array.
+    const partes = document.cookie.split("; ");
+
+    // Recorremos las cookies.
+    for (const parte of partes) {
+
+        // Separamos nombre y valor.
+        const [clave, valor] = parte.split("=");
+
+        // Si encontramos la cookie buscada...
+        if (clave === nombre) {
+
+            // Devolvemos el valor decodificado.
+            return decodeURIComponent(valor);
+        }
+    }
+
+    // Si no existe la cookie, devolvemos null.
+    return null;
+}
+
+
+/*
+====================================================
+A2. GUARDAR EL ORDEN AL PULSAR UN BOTÓN
+====================================================
+*/
+
+// Cambia el criterio de ordenación,
+// lo guarda en una cookie y actualiza
+// la interfaz. Al recargar la página 
+// se quedara seleccionada segun el tipo de busqueda aplicada
+function elegirOrden(nuevo) {
+
+    // Actualizamos el criterio.
+    criterio = nuevo;
+
+    // Guardamos el criterio durante 30 días.
+    guardarCookie("orden", criterio, 30);
+
+    // Refrescamos la lista.
+    actualizar();
+}
+
+/*
+====================================================
+EVENTOS DE LOS BOTONES DE ORDENACIÓN
+====================================================
+*/
+
+// Botón para ordenar por nombre (A-Z).
+document
+    .querySelector("#ordenNombre")
+    .addEventListener("click", () => elegirOrden("nombre"));
+
+// Botón para ordenar por ID.
+document
+    .querySelector("#ordenNumero")
+    .addEventListener("click", () => elegirOrden("numero"));
+
+    /*
+====================================================
+A3. APLICAR EL ORDEN AL CARGAR LA PÁGINA
+====================================================
+
+Prueba en la consola:
+
+document.cookie = "tema=oscuro";
+
+Después ejecuta:
+
+console.log(document.cookie);
+
+Deberías ver algo parecido a:
+
+tema=oscuro; orden=nombre
+
+o
+
+tema=oscuro; orden=numero
+
+Si has borrado la cookie "orden",
+solamente aparecerá:
+
+tema=oscuro
+
+====================================================
+RECUPERAR EL ÚLTIMO CRITERIO DE ORDENACIÓN
+====================================================
+*/
+
+// Leemos la cookie "orden".
+// Si no existe, usamos "ninguno".
+criterio = leerCookie("orden") ?? "ninguno";
+
+// Mostramos los videojuegos aplicando
+// el orden guardado en la cookie.
+actualizar();
