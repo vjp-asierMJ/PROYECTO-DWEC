@@ -1,4 +1,4 @@
-const videojuegos = [
+let  videojuegos = [
     {
         id: 1,
         titulo: "The Legend of Zelda: Echoes of Time",
@@ -83,12 +83,73 @@ const videojuegos = [
 
 console.table(videojuegos);
 
+/*
+====================================================
+Parte B . Reto 2 Fechas en tus tarjetas
+====================================================
+*/
+
+/*
+=================================
+B2 Tres funciones para las fechas
+=================================
+*/
+
+// Un videojuego se considerará reciente
+// si fue lanzado hace menos de 365 días.
+const DIAS_RECIENTE = 365;
+
+function crearFecha(texto) {
+
+    // T00:00 = medianoche local.
+    return new Date(texto + "T00:00");
+}
+
+/*
+----------------------------------------------------
+Devuelve una fecha legible en español.
+Ejemplo:
+console.log(fechaLegible("2026-10-01"));
+2026-10-01 -> 1 de octubre de 2026
+----------------------------------------------------
+*/
+function fechaLegible(texto) {
+
+    return crearFecha(texto).toLocaleDateString(
+        "es-ES",
+        {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }
+    );
+}
+
+/*
+----------------------------------------------------
+Calcula cuántos días han pasado desde
+la fecha indicada hasta hoy.
+console.log(diasDesde("2026-10-01"));
+----------------------------------------------------
+*/
+function diasDesde(texto) {
+
+    const MS_DIA = 24 * 60 * 60 * 1000;
+
+    const ms =
+        Date.now() -
+        crearFecha(texto).getTime();
+
+    return Math.floor(ms / MS_DIA);
+}
+
 
 // ========== SESION 7 - PARTE B - RETO 2 ==========
 
 
 //1.- Listar todo
 
+// 1.- Listar todos los videojuegos
 function listarTodos(videojuegos) {
 
     const LIMITE_ANIO = 2023;
@@ -97,7 +158,11 @@ function listarTodos(videojuegos) {
 
     for (const videojuego of videojuegos) {
 
-        const etiqueta = videojuego.anio <= LIMITE_ANIO
+        // Extraemos el año de la fecha.
+        const anio = Number(videojuego.fecha.substring(0, 4));
+
+        // Comprobamos si es clásico o reciente.
+        const etiqueta = anio <= LIMITE_ANIO
             ? "clásico"
             : "reciente";
 
@@ -108,21 +173,23 @@ function listarTodos(videojuegos) {
 }
 //2.- Filtrar
 
-function filtrar(videojuegos, limite) {//recibe el array y el limite del año
+function filtrar(videojuegos, limite) {
 
     let encontrados = 0;
 
     console.log(`--- Videojuegos disponibles hasta ${limite} ---`);
 
-    for (const videojuego of videojuegos) {//recorre el array
+    for (const videojuego of videojuegos) {
 
-        if (videojuego.disponible && videojuego.anio <= limite) { //si esta disponible y el año es menor al limite
+        const anio = Number(videojuego.fecha.substring(0, 4));
+
+        if (videojuego.disponible && anio <= limite) {
 
             console.log(
-                `${videojuego.id}. ${videojuego.titulo} - ${videojuego.anio}` //lo muestra
+                `${videojuego.id}. ${videojuego.titulo} - ${anio}`
             );
 
-            encontrados++; //actualiza los encontrados
+            encontrados++;
         }
     }
 
@@ -189,46 +256,134 @@ function buscarPorTexto(lista, texto) {
 
     return resultado;
 }
+//funcion para validar el patron del titulo
+function validarTitulo(titulo) {
+
+    /*
+    ^ inicio del texto.
+    $ final del texto.
+    A-Z y a-z letras.
+    0-9 números.
+    \s espacios.
+    {3,50} mínimo 3 caracteres y máximo 50.
+    */
+    const patron = /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s:'-.]{3,50}$/;
+
+    return patron.test(titulo);
+}
+
+/*
+Función para guardar los videojuegos en una cookie.
+Recibe la lista completa de videojuegos.
+*/
+function guardarVideojuegos(lista) {
+
+    // Convierte el array de videojuegos en un texto JSON.
+    const datos = JSON.stringify(lista);
+
+    // Guarda los datos en una cookie durante un año.
+    document.cookie = "videojuegos=" +
+        encodeURIComponent(datos) +
+        "; max-age=31536000; path=/";
+}
+
+
+/*
+Función para recuperar los videojuegos guardados.
+*/
+function cargarVideojuegos() {
+
+    // Busca la cookie que contiene los videojuegos.
+    const cookie = document.cookie
+        .split("; ")
+        .find(fila => fila.startsWith("videojuegos="));
+
+    // Si no existe la cookie, devuelve un array vacío.
+    if (!cookie) return [];
+
+    // Decodifica el contenido y lo convierte otra vez en un array.
+    return JSON.parse(
+        decodeURIComponent(cookie.substring("videojuegos=".length))
+    );
+}
+
 //funcion para añadir un videojuego
 
 function anadir(lista, elemento) {
 
+    // Validar título.
+    if (!validarTitulo(elemento.titulo)) {
+
+        alert("El título debe tener entre 3 y 50 caracteres.");
+
+        return false;
+    }
+
+    // Comprobar que los campos obligatorios están completos.
+    if (
+        !elemento.genero ||
+        !elemento.plataforma ||
+        !elemento.fecha
+    ) {
+        alert("Debes completar todos los campos.");
+        return false;
+    }
+
+    // Buscar el ID más alto.
     let maxId = 0;
 
-    // Buscamos el id más alto de la lista.
     for (const videojuego of lista) {
+
         if (videojuego.id > maxId) {
             maxId = videojuego.id;
         }
     }
 
-    // Asignamos al elemento el siguiente id.
+    // Asignar nuevo ID.
     elemento.id = maxId + 1;
 
-    // Añadimos el elemento a la lista.
+    // Añadir al array.
     lista.push(elemento);
 
-    // Devolvemos el id asignado.
+    // Guardar en cookie.
+    guardarVideojuegos(lista);
+
+    // Actualizar la página.
+    actualizar();
+    mostrarResumen(lista);
+    mostrarEstadisticasEnPagina(lista);
+
     return elemento.id;
 }
-//funcion para eliminar un videojuego por el id
+//asignamos los videojuegos cargados para a poder añadir el juego
+const videojuegosGuardados = cargarVideojuegos();
+
+// Si hay videojuegos guardados, los recuperamos.
+// Si no, mantenemos los videojuegos iniciales.
+if (videojuegosGuardados.length > 0) {
+    videojuegos = videojuegosGuardados;
+}
+//funcion para eliminar un videojuego por el id, actualizada para borrar con cookie
 function eliminarPorId(lista, id) {
 
-    // Recorremos la lista con un for clásico.
     for (let i = 0; i < lista.length; i++) {
 
-        // Comprobamos si el id coincide.
         if (lista[i].id === id) {
 
-            // Eliminamos el elemento encontrado.
             lista.splice(i, 1);
 
-            // Devolvemos true porque se ha eliminado.
+            // Guardamos los cambios.
+            guardarVideojuegos(lista);
+
+            // Actualizamos la página.
+            actualizar();
+            mostrarResumen(lista);
+            mostrarEstadisticasEnPagina(lista);
+
             return true;
         }
     }
 
-    // Si no encontramos el id, devolvemos false.
     return false;
 }
 
@@ -300,6 +455,8 @@ function crearTarjeta(videojuego) {
     const titulo = document.createElement("h2");
     titulo.textContent = videojuego.titulo;
 
+
+
     tarjeta.append(titulo);
 
 
@@ -317,11 +474,21 @@ function crearTarjeta(videojuego) {
     tarjeta.append(plataforma);
 
 
-    // Creamos un párrafo para la fecha de lanzamiento.
+    //MODIFICACION DE LA SESION 12 - B3
+    // Creamos un párrafo para la fecha.
     const fecha = document.createElement("p");
+
+    fecha.classList.add("fecha");
+
     fecha.textContent =
-        "Fecha de lanzamiento: " +
-        formatearFecha(videojuego.fecha);
+        "Lanzamiento: " +
+        fechaLegible(videojuego.fecha);
+
+    // Si se lanzó hace menos de 30 días,
+    // añadimos la clase "reciente".
+    if (diasDesde(videojuego.fecha) <= DIAS_RECIENTE) {
+        tarjeta.classList.add("reciente");
+    }
 
     tarjeta.append(fecha);
 
@@ -460,19 +627,7 @@ contarPorCategoria(videojuegos);
 buscarPorTexto(videojuegos, "God of War");
 buscarPorTexto(videojuegos, "mario");
 
-//creamos un nuevo videojuego
-const nuevoVideojuego = {
-    titulo: "GTA VII",
-    genero: "Acción",
-    plataforma: "PlayStation 6",
-    fecha: "2030-11-19",
-    disponible: false
-};
 
-//llamamos a la funcion añadir
-const nuevoId = anadir(videojuegos, nuevoVideojuego);
-
-console.log("ID asignado:", nuevoId);
 
 //mostramos el array en modo tabla
 console.table(videojuegos);
@@ -480,13 +635,6 @@ console.table(videojuegos);
 
 console.table(buscarPorTexto(videojuegos, "m"));
 
-anadir(videojuegos, {
-    titulo: "Uncharted",
-    genero: "Aventura",
-    plataforma: "PlayStation 5",
-    fecha: "2022-01-28",
-    disponible: true
-});
 //llamada e eliminar por id
 eliminarPorId(videojuegos, 3);  // true
 eliminarPorId(videojuegos, 99); // false
@@ -527,37 +675,69 @@ function ordenar(lista, criterio) {
     //Copiar para no modificar el array original
     const copia = [...lista];
 
-    if(criterio === "nombre") {
+    if (criterio === "nombre") {
         //Texto: localeCompare
-        copia.sort((a,b) => a.titulo.localeCompare(b.titulo));
+        copia.sort((a, b) => a.titulo.localeCompare(b.titulo));
     } else if (criterio === "numero") {
         //Número: resta
         copia.sort((a, b) => a.id - b.id);
+    }
+    //Modificacion Sesion 12 - 4B
+    else if (criterio === "fecha") {
+
+        // Más recientes primero
+        copia.sort((a, b) =>
+            crearFecha(b.fecha) - crearFecha(a.fecha));
     }
 
     //Con "ninguno" se devuelve la copia sin ordenar
     return copia;
 }
 
-//Buscar, ordenar y pintar
-function actualizar() {
-    const encontrados = buscarPorTexto(videojuegos, textoBuscado);
-    const ordenados = ordenar(encontrados, criterio);
-    pintar(ordenados);
-}
 
 //B3: EVENTOS
 //Primero se cogen los elementos del HTML por su id
 const buscador = document.querySelector("#buscador");
 const botonNombre = document.querySelector("#ordenNombre");
 const botonNumero = document.querySelector("#ordenNumero");
+const botonFecha = document.querySelector("#ordenFecha");
+const botonAnadir = document.querySelector("#anadirJuego");
+
+
+
+botonFecha.addEventListener(
+    "click",
+    () => elegirOrden("fecha")
+);
 
 //Buscador: se ejecuta cada vez que escribes
-buscador.addEventListener("input", function() {
+buscador.addEventListener("input", function () {
     textoBuscado = buscador.value;
     actualizar();
 });
 
+botonAnadir.addEventListener("click", function () {
+
+    const nuevoVideojuego = {
+        titulo: document.querySelector("#titulo").value,
+        genero: document.querySelector("#genero").value,
+        plataforma: document.querySelector("#plataforma").value,
+        fecha: document.querySelector("#fecha").value,
+        disponible: document.querySelector("#disponible").checked
+    };
+
+    const nuevoId = anadir(videojuegos, nuevoVideojuego);
+
+    if (nuevoId !== false) {
+        alert("Videojuego añadido correctamente");
+
+        // Limpiamos los campos.
+        document.querySelector("#titulo").value = "";
+        document.querySelector("#genero").value = "";
+        document.querySelector("#plataforma").value = "";
+        document.querySelector("#fecha").value = "";
+    }
+});
 
 // Mostramos los videojuegos en tarjetas (con búsqueda y orden)
 actualizar();
@@ -577,7 +757,7 @@ SESIÓN 11 -  PARTE C/RETO 3
 function pintarResumen(mostrados) {
     const resumen = document.querySelector("#resumen");
 
-    if(mostrados > 0) {
+    if (mostrados > 0) {
         //Hay resultados: "Mostrando 4 de 10 videojuegos"
         resumen.textContent =
             "Mostrando " + mostrados +
@@ -593,11 +773,20 @@ function pintarResumen(mostrados) {
 
 //LLamamos dentro de actualizar
 function actualizar() {
-    const encontrados = buscarPorTexto(videojuegos, textoBuscado);
-    const ordenados = ordenar(encontrados, criterio);
+
+    const encontrados = buscarPorTexto(
+        videojuegos,
+        textoBuscado
+    );
+
+    const ordenados = ordenar(
+        encontrados,
+        criterio
+    );
+
     pintar(ordenados);
-    pintarResumen(ordenados.length);   // <-- nueva
-    //Le pasamos ordenados.length, que es el número de tarjetas que se están mostrando.
+
+    pintarResumen(ordenados.length);
 }
 
 // Mostramos los videojuegos, con búsqueda, orden y resumen.
@@ -698,7 +887,7 @@ document
     .querySelector("#ordenNumero")
     .addEventListener("click", () => elegirOrden("numero"));
 
-    /*
+/*
 ====================================================
 A3. APLICAR EL ORDEN AL CARGAR LA PÁGINA
 ====================================================
@@ -736,3 +925,4 @@ criterio = leerCookie("orden") ?? "ninguno";
 // Mostramos los videojuegos aplicando
 // el orden guardado en la cookie.
 actualizar();
+

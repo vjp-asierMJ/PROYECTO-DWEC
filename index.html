@@ -6,29 +6,60 @@
     <title>Document</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
-<section class="controles">
-    <input id="buscador" type="search" placeholder="Buscar...">
-    <button id="ordenNombre">Ordenar A-Z</button>
-    <button id="ordenNumero">Más rápidas primero</button>
-</section>
 <body>
-   
 
-       <!-- Título principal de la página -->
+    <section class="controles">
+
+        <input id="buscador" type="search" placeholder="Buscar...">
+
+        <button id="ordenNombre">Ordenar A-Z</button>
+
+        <button id="ordenNumero">Ordenar por índice</button>
+
+        <button id="ordenFecha">Más recientes primero</button>
+
+    </section>
+
+    <section id="formulario">
+
+        <h2>Añadir un videojuego</h2>
+
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" placeholder="Nombre del videojuego">
+
+        <label for="genero">Género:</label>
+        <input type="text" id="genero" placeholder="Ejemplo: Aventura">
+
+        <label for="plataforma">Plataforma:</label>
+        <input type="text" id="plataforma" placeholder="Ejemplo: PC">
+
+        <label for="fecha">Fecha de lanzamiento:</label>
+        <input type="date" id="fecha">
+
+        <label for="disponible">
+            <input type="checkbox" id="disponible" checked>
+            Disponible
+        </label>
+
+        <button id="anadirJuego" type="button">
+            Añadir videojuego
+        </button>
+
+    </section>
+
     <header>
+
         <h1>Mi biblioteca de videojuegos</h1>
 
-        <!-- Aquí se mostrará el número total de videojuegos -->
         <p id="resumen"></p>
 
-        <!-- Aquí aparecerán las estadísticas por género -->
         <p id="estadisticas"></p>
+
     </header>
 
-    <!-- Contenedor en el que JavaScript dibujará las tarjetas -->
     <main id="listado"></main>
 
-    <!-- Cargamos el JavaScript de la carpeta js -->
-      <script src="js/app.js" defer></script>
+    <script src="js/app.js" defer></script>
+
 </body>
 </html>
