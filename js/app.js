@@ -289,6 +289,7 @@ function guardarVideojuegos(lista) {
 
 
 /*
+Paso Extra Guardar el juego de forma permanente
 Función para recuperar los videojuegos guardados.
 */
 function cargarVideojuegos() {
