@@ -1,4 +1,4 @@
-let  videojuegos = [
+let videojuegos = [
     {
         id: 1,
         titulo: "The Legend of Zelda: Echoes of Time",
