@@ -1,5 +1,5 @@
 /* =====================================================
-   BIBLIOTECA DE VIDEOJUEGOS - SPRINT 2
+   BIBLIOTECA DE VIDEOJUEGOS
 
    Este archivo contiene toda la lógica de la aplicación:
    - Datos iniciales de la biblioteca.
@@ -11,8 +11,6 @@
    - Eventos de los controles HTML.
 
    Se utilizan los recursos trabajados en las sesiones
-   de BOM, DOM, eventos, arrays, cookies, fechas y
-   expresiones regulares.
    ===================================================== */
 
 
