@@ -171,51 +171,92 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
-
 /* =====================================================
-   FORMULARIO A ANCHO COMPLETO
+   FORMULARIO PARA AÑADIR VIDEOJUEGOS
    ===================================================== */
 
 #formulario {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
 
-    /* Ocupa todo el ancho disponible */
+    /* Dos parejas de etiqueta y campo por fila */
+    grid-template-columns:
+        minmax(120px, 170px) minmax(0, 1fr)
+        minmax(120px, 170px) minmax(0, 1fr);
+
+    align-items: center;
+    gap: 10px 16px;
+
     width: 100%;
     max-width: none;
 
-    margin: 0 0 32px;
-    padding: clamp(22px, 3vw, 35px);
+    margin: 0 0 25px;
+    padding: 20px 24px;
 
     border: 1px solid var(--borde);
-    border-radius: 16px;
+    border-radius: 14px;
 
     background-color: var(--superficie);
     box-shadow: var(--sombra);
 }
 
 /* Título del formulario */
-
 #formulario h2 {
-    margin-bottom: 12px;
-    font-size: 1.6rem;
+    grid-column: 1 / -1;
+
+    margin: 0 0 5px;
+    font-size: 1.35rem;
 }
 
 /* Etiquetas */
-
 #formulario label {
-    margin-top: 5px;
-
+    margin: 0;
     color: #344256;
+    font-size: 0.95rem;
     font-weight: 600;
 }
 
-/* Campos ocupando todo el ancho */
-
+/* Campos de entrada */
 #formulario input,
 #formulario select {
     width: 100%;
+    min-height: 40px;
+    padding: 8px 12px;
+
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+
+    background-color: white;
+    color: var(--texto);
+
+    font-size: 14px;
+}
+
+/* Efecto al seleccionar un campo */
+#formulario input:focus,
+#formulario select:focus {
+    outline: none;
+    border-color: var(--primario);
+    box-shadow: 0 0 0 3px rgba(36, 95, 158, 0.12);
+}
+
+/* Mensaje de validación */
+#formulario #mensaje {
+    grid-column: 1 / -1;
+    min-height: 18px;
+    margin: 0;
+    font-size: 13px;
+}
+
+/* Botón de añadir */
+#anadirJuego {
+    grid-column: 1 / -1;
+    justify-self: end;
+
+    min-height: 40px;
+    margin-top: 2px;
+    padding: 8px 22px;
+
+    font-size: 14px;
 }
 
 /* Botón de añadir */
