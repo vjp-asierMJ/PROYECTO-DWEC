@@ -1,87 +1,424 @@
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 24px;
-            background-color: #f4f6f9;
-            color: #222;
-        }
+/* =====================================================
+   BIBLIOTECA DE VIDEOJUEGOS - SPRINT 2
+   Diseño moderno, adaptable y formulario a ancho completo
+   ===================================================== */
 
-        header {
-            margin-bottom: 24px;
-        }
 
-        h1 {
-            margin-bottom: 10px;
-        }
+/* COLORES GENERALES */
 
-        #resumen,
-        #estadisticas {
-            line-height: 1.6;
-        }
+:root {
+    --fondo: #f3f6fb;
+    --superficie: #ffffff;
+    --texto: #202b3c;
+    --texto-secundario: #64748b;
+    --primario: #245f9e;
+    --primario-hover: #194978;
+    --borde: #d7e0eb;
+    --sombra: 0 8px 24px rgba(28, 45, 70, 0.08);
+    --verde-fondo: #e1f5e8;
+    --verde-texto: #176b30;
+    --rojo-fondo: #fde8e8;
+    --rojo-texto: #a12323;
+    --naranja: #f26b3a;
+}
 
-        /* Cuadrícula adaptable de videojuegos */
-        #listado {
-            display: grid;
-            grid-template-columns: repeat(
-                auto-fill,
-                minmax(240px, 1fr)
-            );
-            gap: 20px;
-        }
 
-        /* Tarjeta individual */
-        .tarjeta {
-            background-color: white;
-            padding: 18px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px #0002;
-        }
+/* CONFIGURACIÓN GENERAL */
 
-        .tarjeta h2 {
-            font-size: 1.2rem;
-            margin-top: 0;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        .tarjeta p {
-            line-height: 1.5;
-        }
+body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 30px clamp(16px, 3vw, 40px) 48px;
 
-        /* Etiquetas de disponibilidad */
-        .estado {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
+    background-color: var(--fondo);
+    color: var(--texto);
 
-        .disponible {
-            background-color: #d8f5df;
-            color: #176b30;
-        }
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
 
-        .no-disponible {
-            background-color: #ffe0e0;
-            color: #a12323;
-        }
 
-        .vacio {
-            grid-column: 1 / -1;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-        }
+/* CABECERA */
 
-        .reciente {
-            border-left: 6px solid #f26b3a;
-        }
+header {
+    width: 100%;
+    margin-bottom: 25px;
+    padding: 26px 28px;
 
-        .fecha {
-            color: #6b7785; font-size:  9.rem;
-        }
+    border: 1px solid var(--borde);
+    border-radius: 16px;
 
-        @media (max-width: 500px) {
-            body {
-                padding: 14px;
-            }
-        }
+    background-color: var(--superficie);
+    box-shadow: var(--sombra);
+}
+
+h1 {
+    margin: 0 0 12px;
+
+    font-size: clamp(1.7rem, 3vw, 2.35rem);
+    line-height: 1.2;
+}
+
+h2 {
+    margin: 0 0 16px;
+    font-size: 1.45rem;
+}
+
+#resumen {
+    margin: 0 0 8px;
+    color: var(--primario);
+    font-weight: bold;
+}
+
+#estadisticas {
+    margin: 0;
+    color: var(--texto-secundario);
+    line-height: 1.7;
+}
+
+
+/* CONTROLES SUPERIORES */
+
+.controles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+#buscador {
+    flex: 1 1 240px;
+    min-width: 220px;
+}
+
+
+/* CAMPOS DEL FORMULARIO */
+
+input[type="text"],
+input[type="date"],
+input[type="search"],
+select {
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 14px;
+
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+
+    background-color: var(--superficie);
+    color: var(--texto);
+
+    font-family: inherit;
+    font-size: 16px;
+
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input::placeholder {
+    color: #8290a3;
+}
+
+/* Efecto al seleccionar un campo */
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primario);
+    box-shadow: 0 0 0 3px rgba(36, 95, 158, 0.15);
+}
+
+
+/* BOTONES GENERALES */
+
+button {
+    min-height: 48px;
+    padding: 10px 18px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    background-color: var(--primario);
+    color: white;
+
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+button:hover {
+    background-color: var(--primario-hover);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button:focus-visible {
+    outline: 3px solid rgba(36, 95, 158, 0.3);
+    outline-offset: 2px;
+}
+
+
+/* =====================================================
+   FORMULARIO A ANCHO COMPLETO
+   ===================================================== */
+
+#formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    /* Ocupa todo el ancho disponible */
+    width: 100%;
+    max-width: none;
+
+    margin: 0 0 32px;
+    padding: clamp(22px, 3vw, 35px);
+
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+
+    background-color: var(--superficie);
+    box-shadow: var(--sombra);
+}
+
+/* Título del formulario */
+
+#formulario h2 {
+    margin-bottom: 12px;
+    font-size: 1.6rem;
+}
+
+/* Etiquetas */
+
+#formulario label {
+    margin-top: 5px;
+
+    color: #344256;
+    font-weight: 600;
+}
+
+/* Campos ocupando todo el ancho */
+
+#formulario input,
+#formulario select {
+    width: 100%;
+}
+
+/* Botón de añadir */
+
+#anadirJuego {
+    align-self: flex-start;
+    margin-top: 8px;
+}
+
+
+/* MENSAJES DE VALIDACIÓN */
+
+#mensaje,
+.mensaje {
+    min-height: 24px;
+    margin: 5px 0 0;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   LISTADO DE VIDEOJUEGOS
+   ===================================================== */
+
+#listado {
+    display: grid;
+
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(min(100%, 260px), 1fr)
+    );
+
+    align-items: stretch;
+    gap: 20px;
+
+    width: 100%;
+}
+
+
+/* TARJETAS INDIVIDUALES */
+
+.tarjeta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    min-width: 0;
+    min-height: 270px;
+
+    padding: 22px;
+
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+
+    background-color: var(--superficie);
+    box-shadow: var(--sombra);
+
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tarjeta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(28, 45, 70, 0.12);
+}
+
+.tarjeta h2 {
+    margin: 0 0 12px;
+
+    overflow-wrap: anywhere;
+    font-size: 1.2rem;
+}
+
+.tarjeta p {
+    margin: 5px 0;
+    color: #46556a;
+}
+
+
+/* FECHAS */
+
+.fecha {
+    color: var(--texto-secundario) !important;
+    font-size: 0.92rem;
+}
+
+
+/* DISPONIBILIDAD */
+
+.estado {
+    display: inline-block;
+
+    margin-top: 13px;
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.88rem;
+    font-weight: bold;
+}
+
+.disponible {
+    background-color: var(--verde-fondo);
+    color: var(--verde-texto);
+}
+
+.no-disponible {
+    background-color: var(--rojo-fondo);
+    color: var(--rojo-texto);
+}
+
+
+/* VIDEOJUEGOS RECIENTES */
+
+.reciente {
+    border-left: 5px solid var(--naranja);
+}
+
+
+/* BOTÓN ELIMINAR */
+
+.boton-eliminar {
+    min-height: 40px;
+    margin-top: auto;
+    padding: 8px 14px;
+
+    border: 1px solid #f1caca;
+    border-radius: 8px;
+
+    background-color: #fff5f5;
+    color: var(--rojo-texto);
+}
+
+.boton-eliminar:hover {
+    border-color: var(--rojo-texto);
+    background-color: var(--rojo-texto);
+    color: white;
+}
+
+
+/* MENSAJE CUANDO NO HAY VIDEOJUEGOS */
+
+.vacio {
+    grid-column: 1 / -1;
+
+    margin: 0;
+    padding: 24px;
+
+    border: 1px dashed #b8c6d8;
+    border-radius: 12px;
+
+    background-color: var(--superficie);
+    color: var(--texto-secundario);
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   ADAPTACIÓN A MÓVILES Y TABLETS
+   ===================================================== */
+
+@media (max-width: 720px) {
+
+    body {
+        padding: 18px 14px 32px;
+    }
+
+    header {
+        padding: 22px 20px;
+    }
+
+    /* Los controles se colocan en vertical */
+
+    .controles {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #buscador {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .controles button {
+        width: 100%;
+    }
+
+    /* El formulario mantiene el ancho completo */
+
+    #formulario {
+        width: 100%;
+        padding: 20px;
+    }
+
+    #anadirJuego {
+        width: 100%;
+    }
+
+    /* Las tarjetas se adaptan a pantallas pequeñas */
+
+    #listado {
+        grid-template-columns: 1fr;
+    }
+}

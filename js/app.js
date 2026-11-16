@@ -1,4 +1,28 @@
-let  videojuegos = [
+/* =====================================================
+   BIBLIOTECA DE VIDEOJUEGOS - SPRINT 2
+
+   Este archivo contiene toda la lógica de la aplicación:
+   - Datos iniciales de la biblioteca.
+   - Funciones para trabajar con fechas.
+   - Búsqueda, ordenación y gestión de videojuegos.
+   - Estadísticas de la colección.
+   - Guardado del criterio de ordenación mediante cookies.
+   - Creación y actualización del contenido de la página.
+   - Eventos de los controles HTML.
+
+   Se utilizan los recursos trabajados en las sesiones
+   de BOM, DOM, eventos, arrays, cookies, fechas y
+   expresiones regulares.
+   ===================================================== */
+
+
+// =====================================================
+// 1. DATOS INICIALES Y VARIABLES DE LA APLICACIÓN
+// =====================================================
+
+// Array principal. Cada posición contiene un objeto videojuego.
+// Todos los videojuegos tienen los mismos campos.
+let videojuegos = [
     {
         id: 1,
         titulo: "The Legend of Zelda: Echoes of Time",
@@ -81,114 +105,125 @@ let  videojuegos = [
     }
 ];
 
-console.table(videojuegos);
+// Número de días que se utiliza para destacar un videojuego reciente.
+const DIAS_RECIENTE = 30;
+
+// Estado de la interfaz. Se modifica cuando el usuario escribe
+// en el buscador o selecciona un criterio de ordenación.
+let textoBuscado = "";
+let criterio = "ninguno";
+
+
+// =====================================================
+// 2. FUNCIONES PARA TRABAJAR CON FECHAS
+// =====================================================
 
 /*
-====================================================
-Parte B . Reto 2 Fechas en tus tarjetas
-====================================================
+   crearFecha(texto)
+   -----------------
+   Convierte una fecha guardada como texto (AAAA-MM-DD)
+   en un objeto Date.
+
+   Se añade T00:00 para que la fecha se interprete a
+   medianoche en la hora local.
+
+   Parámetro:
+   - texto: fecha en formato AAAA-MM-DD.
+
+   Devuelve:
+   - Un objeto Date.
 */
-
-/*
-=================================
-B2 Tres funciones para las fechas
-=================================
-*/
-
-// Un videojuego se considerará reciente
-// si fue lanzado hace menos de 365 días.
-const DIAS_RECIENTE = 365;
-
 function crearFecha(texto) {
-
-    // T00:00 = medianoche local.
     return new Date(texto + "T00:00");
 }
 
 /*
-----------------------------------------------------
-Devuelve una fecha legible en español.
-Ejemplo:
-console.log(fechaLegible("2026-10-01"));
-2026-10-01 -> 1 de octubre de 2026
-----------------------------------------------------
+   fechaLegible(texto)
+   -------------------
+   Convierte una fecha al formato habitual en español.
+   Por ejemplo: 2026-10-01 se muestra como 1 de octubre de 2026.
+
+   Parámetro:
+   - texto: fecha en formato AAAA-MM-DD.
+
+   Devuelve:
+   - La fecha preparada como texto para mostrarla en una tarjeta.
 */
 function fechaLegible(texto) {
-
-    return crearFecha(texto).toLocaleDateString(
-        "es-ES",
-        {
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        }
-    );
+    return crearFecha(texto).toLocaleDateString("es-ES", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
 }
 
 /*
-----------------------------------------------------
-Calcula cuántos días han pasado desde
-la fecha indicada hasta hoy.
-console.log(diasDesde("2026-10-01"));
-----------------------------------------------------
+   diasDesde(texto)
+   ----------------
+   Calcula los días transcurridos desde la fecha indicada
+   hasta el momento actual.
+
+   Parámetro:
+   - texto: fecha en formato AAAA-MM-DD.
+
+   Devuelve:
+   - El número entero de días transcurridos.
 */
 function diasDesde(texto) {
-
     const MS_DIA = 24 * 60 * 60 * 1000;
+    const milisegundos = Date.now() - crearFecha(texto).getTime();
 
-    const ms =
-        Date.now() -
-        crearFecha(texto).getTime();
-
-    return Math.floor(ms / MS_DIA);
+    return Math.floor(milisegundos / MS_DIA);
 }
 
 
-// ========== SESION 7 - PARTE B - RETO 2 ==========
+// =====================================================
+// 3. FUNCIONES PARA CONSULTAR Y GESTIONAR VIDEOJUEGOS
+// =====================================================
 
-
-//1.- Listar todo
-
-// 1.- Listar todos los videojuegos
-function listarTodos(videojuegos) {
-
+/*
+   listarTodos(lista)
+   ------------------
+   Recorre la lista y escribe en la consola el título de
+   cada videojuego. Clasifica como clásico los lanzados
+   hasta 2023 y como reciente los posteriores.
+*/
+function listarTodos(lista) {
     const LIMITE_ANIO = 2023;
 
     console.log("--- Todos los videojuegos ---");
 
-    for (const videojuego of videojuegos) {
+    for (const videojuego of lista) {
+        const anio = crearFecha(videojuego.fecha).getFullYear();
+        const etiqueta = anio <= LIMITE_ANIO ? "clásico" : "reciente";
 
-        // Extraemos el año de la fecha.
-        const anio = Number(videojuego.fecha.substring(0, 4));
-
-        // Comprobamos si es clásico o reciente.
-        const etiqueta = anio <= LIMITE_ANIO
-            ? "clásico"
-            : "reciente";
-
-        console.log(
-            `${videojuego.id}. ${videojuego.titulo} - ${etiqueta}`
-        );
+        console.log(videojuego.id + ". " + videojuego.titulo + " - " + etiqueta);
     }
 }
-//2.- Filtrar
 
-function filtrar(videojuegos, limite) {
+/*
+   filtrar(lista, limite)
+   ---------------------
+   Cuenta los videojuegos disponibles cuyo año de lanzamiento
+   es menor o igual que el límite recibido.
 
+   Parámetros:
+   - lista: array de videojuegos.
+   - limite: último año que se quiere incluir.
+
+   Devuelve:
+   - La cantidad de videojuegos que cumplen las condiciones.
+*/
+function filtrar(lista, limite) {
     let encontrados = 0;
 
-    console.log(`--- Videojuegos disponibles hasta ${limite} ---`);
+    console.log("--- Videojuegos disponibles hasta " + limite + " ---");
 
-    for (const videojuego of videojuegos) {
-
-        const anio = Number(videojuego.fecha.substring(0, 4));
+    for (const videojuego of lista) {
+        const anio = crearFecha(videojuego.fecha).getFullYear();
 
         if (videojuego.disponible && anio <= limite) {
-
-            console.log(
-                `${videojuego.id}. ${videojuego.titulo} - ${anio}`
-            );
-
+            console.log(videojuego.id + ". " + videojuego.titulo + " - " + anio);
             encontrados++;
         }
     }
@@ -196,191 +231,159 @@ function filtrar(videojuegos, limite) {
     return encontrados;
 }
 
-//funcion para contar por categoria
-function contarPorCategoria(videojuegos) {
+/*
+   contarPorCategoria(lista)
+   ------------------------
+   Cuenta cuántos videojuegos hay de cada género.
 
-    let aventura = 0; //declaramos los distintos tipos de videojuegos
-    let rpg = 0;
-    let accion = 0;
-    let deportes = 0;
-    let otros = 0;
+   Se utiliza un objeto como tabla de contadores:
+   el nombre del género es la propiedad y su cantidad es el valor.
+   El array nombresGeneros permite recorrer después los géneros
+   en el mismo orden en el que aparecen por primera vez.
 
-    for (const videojuego of videojuegos) { //recorre cada videojuego
+   Parámetro:
+   - lista: array de videojuegos.
 
-        switch (videojuego.genero) { //dependiendo de su genero lo contamos
+   Devuelve:
+   - Un objeto con las cantidades y los nombres de los géneros.
+*/
+function contarPorCategoria(lista) {
+    const generos = {};
+    const nombresGeneros = [];
 
-            case "Aventura":
-                aventura++;
-                break;
+    for (const videojuego of lista) {
+        const genero = videojuego.genero;
 
-            case "RPG":
-                rpg++;
-                break;
-
-            case "Acción":
-                accion++;
-                break;
-
-            case "Deportes":
-                deportes++;
-                break;
-
-            default: //opcion por defecto
-                console.log(`Género inesperado: ${videojuego.genero}`);
-                otros++;
+        // Si todavía no existe ese género, creamos su contador.
+        if (generos[genero] === undefined) {
+            generos[genero] = 0;
+            nombresGeneros.push(genero);
         }
+
+        // Sumamos uno al contador del género correspondiente.
+        generos[genero]++;
     }
 
-    console.log("--- Videojuegos por género ---");
-    console.log(`Aventura: ${aventura}`);
-    console.log(`RPG: ${rpg}`);
-    console.log(`Acción: ${accion}`);
-    console.log(`Deportes: ${deportes}`);
-    console.log(`Otros: ${otros}`);
+    return {
+        cantidades: generos,
+        nombres: nombresGeneros
+    };
 }
 
-// ========== SESION 8 - PARTE B - RETO 2 ==========
-//funcion para buscar un videojuego
+/*
+   buscarPorTexto(lista, texto)
+   ---------------------------
+   Devuelve otro array con los títulos que contienen el texto buscado.
+
+   Se usa split(texto) para comprobar si el título se puede separar
+   por el texto introducido. Si el resultado tiene más de una parte,
+   significa que el texto aparece en el título.
+
+   La búsqueda distingue entre mayúsculas y minúsculas.
+
+   Parámetros:
+   - lista: array completo de videojuegos.
+   - texto: texto escrito en el buscador.
+
+   Devuelve:
+   - Un array con los videojuegos encontrados.
+*/
 function buscarPorTexto(lista, texto) {
+    const resultado = [];
 
-    const buscado = texto.toLowerCase(); //recogemos el titulo
-    const resultado = []; //creamos un array para guardar los titulos encontrados
-
-    for (const elemento of lista) {
-
-        // Si el título contiene el texto buscado, lo añadimos al resultado.
-        if (elemento.titulo.toLowerCase().includes(buscado)) {
-            resultado.push(elemento);
+    for (const videojuego of lista) {
+        // Si el buscador está vacío, se incluye todo el catálogo.
+        // Si no, se comprueba si el título contiene el texto.
+        if (texto === "" || videojuego.titulo.split(texto).length > 1) {
+            resultado.push(videojuego);
         }
     }
 
     return resultado;
 }
-//funcion para validar el patron del titulo
+
+/*
+   validarTitulo(titulo)
+   --------------------
+   Comprueba que el título tenga entre 3 y 50 caracteres.
+   La expresión regular permite letras, números, espacios y
+   algunos signos de puntuación.
+
+   Devuelve true si el título cumple el patrón y false si no.
+*/
 function validarTitulo(titulo) {
-
-    /*
-    ^ inicio del texto.
-    $ final del texto.
-    A-Z y a-z letras.
-    0-9 números.
-    \s espacios.
-    {3,50} mínimo 3 caracteres y máximo 50.
-    */
-    const patron = /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s:'-.]{3,50}$/;
-
+    const patron = /^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ0-9\s:'.,!?()-]{3,50}$/;
     return patron.test(titulo);
 }
 
 /*
-Función para guardar los videojuegos en una cookie.
-Recibe la lista completa de videojuegos.
+   anadir(lista, elemento)
+   ----------------------
+   Valida los datos, calcula el siguiente identificador y añade
+   el objeto al array recibido.
+
+   No guarda la colección en cookies: la cookie se utiliza
+   únicamente para recordar el criterio de ordenación.
+
+   Parámetros:
+   - lista: array donde se añadirá el videojuego.
+   - elemento: objeto con los datos del videojuego nuevo.
+
+   Devuelve:
+   - El identificador nuevo si se añade correctamente.
+   - false si los datos no son válidos.
 */
-function guardarVideojuegos(lista) {
-
-    // Convierte el array de videojuegos en un texto JSON.
-    const datos = JSON.stringify(lista);
-
-    // Guarda los datos en una cookie durante un año.
-    document.cookie = "videojuegos=" +
-        encodeURIComponent(datos) +
-        "; max-age=31536000; path=/";
-}
-
-
-/*
-Paso Extra Guardar el juego de forma permanente
-Función para recuperar los videojuegos guardados.
-*/
-function cargarVideojuegos() {
-
-    // Busca la cookie que contiene los videojuegos.
-    const cookie = document.cookie
-        .split("; ")
-        .find(fila => fila.startsWith("videojuegos="));
-
-    // Si no existe la cookie, devuelve un array vacío.
-    if (!cookie) return [];
-
-    // Decodifica el contenido y lo convierte otra vez en un array.
-    return JSON.parse(
-        decodeURIComponent(cookie.substring("videojuegos=".length))
-    );
-}
-
-//funcion para añadir un videojuego
-
 function anadir(lista, elemento) {
-
-    // Validar título.
+    // Comprobamos primero que el título cumple el patrón.
     if (!validarTitulo(elemento.titulo)) {
-
-        alert("El título debe tener entre 3 y 50 caracteres.");
-
         return false;
     }
 
-    // Comprobar que los campos obligatorios están completos.
-    if (
-        !elemento.genero ||
-        !elemento.plataforma ||
-        !elemento.fecha
-    ) {
-        alert("Debes completar todos los campos.");
+    // Comprobamos que los campos obligatorios no estén vacíos.
+    if (elemento.genero === "" ||
+        elemento.plataforma === "" ||
+        elemento.fecha === "") {
         return false;
     }
 
-    // Buscar el ID más alto.
+    // Buscamos el ID más alto para no repetir identificadores.
     let maxId = 0;
 
     for (const videojuego of lista) {
-
         if (videojuego.id > maxId) {
             maxId = videojuego.id;
         }
     }
 
-    // Asignar nuevo ID.
+    // El nuevo identificador será el máximo más uno.
     elemento.id = maxId + 1;
 
-    // Añadir al array.
+    // Incorporamos el nuevo objeto al array.
     lista.push(elemento);
-
-    // Guardar en cookie.
-    guardarVideojuegos(lista);
-
-    // Actualizar la página.
-    actualizar();
-    mostrarResumen(lista);
-    mostrarEstadisticasEnPagina(lista);
 
     return elemento.id;
 }
-//asignamos los videojuegos cargados para a poder añadir el juego
-const videojuegosGuardados = cargarVideojuegos();
 
-// Si hay videojuegos guardados, los recuperamos.
-// Si no, mantenemos los videojuegos iniciales.
-if (videojuegosGuardados.length > 0) {
-    videojuegos = videojuegosGuardados;
-}
-//funcion para eliminar un videojuego por el id, actualizada para borrar con cookie
+/*
+   eliminarPorId(lista, id)
+   -----------------------
+   Busca un videojuego por su identificador y lo elimina.
+
+   Se utiliza splice(i, 1) para quitar un elemento en la posición i.
+   La función termina inmediatamente después de eliminarlo, con return.
+
+   Parámetros:
+   - lista: array donde se busca el videojuego.
+   - id: identificador que se quiere eliminar.
+
+   Devuelve:
+   - true si lo encuentra y lo elimina.
+   - false si no existe ese identificador.
+*/
 function eliminarPorId(lista, id) {
-
     for (let i = 0; i < lista.length; i++) {
-
         if (lista[i].id === id) {
-
             lista.splice(i, 1);
-
-            // Guardamos los cambios.
-            guardarVideojuegos(lista);
-
-            // Actualizamos la página.
-            actualizar();
-            mostrarResumen(lista);
-            mostrarEstadisticasEnPagina(lista);
-
             return true;
         }
     }
@@ -388,542 +391,518 @@ function eliminarPorId(lista, id) {
     return false;
 }
 
-//funcion para mostrar las estadisticas
+/*
+   estadisticas(lista)
+   -------------------
+   Calcula estadísticas útiles de la colección. No suma los ID:
+   trabaja con los años de lanzamiento de los videojuegos.
 
+   Devuelve un objeto con:
+   - Total de videojuegos.
+   - Número de disponibles y no disponibles.
+   - Año medio de lanzamiento.
+   - Videojuego más reciente.
+   - Videojuego más antiguo.
+
+   Si la lista está vacía, los videojuegos más reciente y más
+   antiguo quedan a null y el año medio también queda a null.
+*/
 function estadisticas(lista) {
+    let disponibles = 0;
+    let sumaAnios = 0;
+    let masReciente = null;
+    let masAntiguo = null;
 
-    // Comprobamos si la lista está vacía.
-    if (lista.length === 0) {
-        console.log("La lista de videojuegos está vacía.");
-        return;
-    }
-
-    let total = 0;
-    let maximo = lista[0];
-
-    // Recorremos la lista.
     for (const videojuego of lista) {
+        const fecha = crearFecha(videojuego.fecha);
+        const anio = fecha.getFullYear();
 
-        // Sumamos los ID.
-        total += videojuego.id;
+        // Sumamos años de lanzamiento para calcular la media.
+        sumaAnios += anio;
 
-        // Buscamos el ID más alto.
-        if (videojuego.id > maximo.id) {
-            maximo = videojuego;
+        // Contamos los videojuegos que están disponibles.
+        if (videojuego.disponible) {
+            disponibles++;
+        }
+
+        // Comparamos fechas para encontrar el lanzamiento más reciente.
+        if (masReciente === null || fecha > crearFecha(masReciente.fecha)) {
+            masReciente = videojuego;
+        }
+
+        // Comparamos fechas para encontrar el lanzamiento más antiguo.
+        if (masAntiguo === null || fecha < crearFecha(masAntiguo.fecha)) {
+            masAntiguo = videojuego;
         }
     }
 
-    // Calculamos la media.
-    const media = total / lista.length;
+    // Evitamos dividir entre cero cuando no hay videojuegos.
+    let anioMedioLanzamiento = null;
 
-    // Mostramos los resultados.
-    console.log("--- Estadísticas de videojuegos ---");
-    console.log("Total de los ID:", total);
-    console.log("Media de los ID:", media.toFixed(1));
-    console.log("Videojuego con el ID más alto:", maximo.titulo);
-    console.log("Valor más alto:", maximo.id);
+    if (lista.length > 0) {
+        anioMedioLanzamiento = sumaAnios / lista.length;
+    }
+
+    // Se devuelve un objeto para que otras funciones utilicen los datos.
+    return {
+        totalVideojuegos: lista.length,
+        videojuegosDisponibles: disponibles,
+        videojuegosNoDisponibles: lista.length - disponibles,
+        anioMedioLanzamiento: anioMedioLanzamiento,
+        videojuegoMasReciente: masReciente,
+        videojuegoMasAntiguo: masAntiguo
+    };
 }
 
-// Función para convertir una fecha de AAAA-MM-DD a DD/MM/AAAA
-function formatearFecha(fecha) {
-    const partes = fecha.split("-");
 
-    return partes[2] + "/" + partes[1] + "/" + partes[0];
+// =====================================================
+// 4. FUNCIONES PARA GUARDAR EL CRITERIO DE ORDENACIÓN
+// =====================================================
+
+/*
+   guardarCookie(nombre, valor, dias)
+   ----------------------------------
+   Guarda una cookie con el nombre y valor indicados.
+   La duración se recibe en días y se convierte a segundos.
+
+   En este proyecto se llama para guardar la cookie "orden".
+   No se guarda el array de videojuegos.
+*/
+function guardarCookie(nombre, valor, dias) {
+    const segundos = dias * 24 * 60 * 60;
+    const texto = encodeURIComponent(valor);
+
+    document.cookie = nombre + "=" + texto +
+        "; max-age=" + segundos + "; path=/";
 }
 
 /*
-====================================================
-APARTADO B - FUNCIONES PARA MOSTRAR EL CONTENIDO
-EN LA PÁGINA WEB
-====================================================
+   leerCookie(nombre)
+   ------------------
+   Lee las cookies disponibles y busca la que tenga el nombre recibido.
+
+   Devuelve el valor de la cookie si la encuentra o null si no existe.
 */
+function leerCookie(nombre) {
+    const partes = document.cookie.split("; ");
+
+    for (const parte of partes) {
+        // Separamos el nombre y el valor de cada cookie.
+        const [clave, valor] = parte.split("=");
+
+        if (clave === nombre) {
+            return decodeURIComponent(valor);
+        }
+    }
+
+    return null;
+}
+
+/*
+   eliminarCookie(nombre)
+   ---------------------
+   Borra una cookie asignándole una duración de cero segundos.
+   Se utiliza para eliminar la antigua cookie "videojuegos" que
+   guardaba la colección completa en versiones anteriores.
+*/
+function eliminarCookie(nombre) {
+    // Primero comprobamos si la cookie existe.
+    // Así no intentamos escribir una cookie cuando se abre la página
+    // directamente como archivo (file://), donde el navegador puede
+    // no permitir guardar cookies.
+    const partes = document.cookie.split("; ");
+
+    for (const parte of partes) {
+        const [clave] = parte.split("=");
+
+        if (clave === nombre) {
+            document.cookie = nombre + "=; max-age=0; path=/";
+            return;
+        }
+    }
+}
+
+/*
+   elegirOrden(nuevoCriterio)
+   -------------------------
+   Cambia el criterio de ordenación, lo guarda durante 30 días
+   y vuelve a actualizar el contenido de la página.
+*/
+function elegirOrden(nuevoCriterio) {
+    criterio = nuevoCriterio;
+
+    // Actualizamos primero la página para que la ordenación funcione
+    // incluso si el navegador no permite guardar cookies.
+    renderizarAplicacion();
+
+    // La cookie solo recuerda la preferencia de ordenación.
+    guardarCookie("orden", criterio, 30);
+}
+
+/*
+   ordenar(lista, criterioOrden)
+   ----------------------------
+   Ordena una copia de la lista para no modificar el array original.
+
+   Criterios disponibles:
+   - nombre: orden alfabético A-Z.
+   - numero: ID de menor a mayor.
+   - fecha: fecha de lanzamiento más reciente primero.
+
+   Devuelve el array ordenado.
+*/
+function ordenar(lista, criterioOrden) {
+    const copia = [...lista];
+
+    if (criterioOrden === "nombre") {
+        copia.sort((a, b) => a.titulo.localeCompare(b.titulo));
+    } else if (criterioOrden === "numero") {
+        copia.sort((a, b) => a.id - b.id);
+    } else if (criterioOrden === "fecha") {
+        copia.sort((a, b) => crearFecha(b.fecha) - crearFecha(a.fecha));
+    }
+
+    return copia;
+}
 
 
-// B1. Crear una tarjeta para un videojuego
+// =====================================================
+// 5. FUNCIONES PARA MOSTRAR LOS VIDEOJUEGOS EN EL DOM
+// =====================================================
+
+/*
+   crearTarjeta(videojuego)
+   -----------------------
+   Crea un article con los datos de un videojuego.
+   También añade el botón que permite eliminarlo.
+
+   Devuelve:
+   - El elemento article creado y preparado para insertarlo en la página.
+*/
 function crearTarjeta(videojuego) {
-
-    // Creamos un artículo que será la tarjeta.
+    // Creamos el contenedor principal de la tarjeta.
     const tarjeta = document.createElement("article");
-
-    // Añadimos la clase CSS.
     tarjeta.classList.add("tarjeta");
 
-    // Guardamos el ID en la tarjeta para identificarla.
-    tarjeta.dataset.id = videojuego.id;
-
-
-    // Creamos y mostramos el título del videojuego.
+    // Creamos el título.
     const titulo = document.createElement("h2");
     titulo.textContent = videojuego.titulo;
-
-
-
     tarjeta.append(titulo);
 
-
-    // Creamos un párrafo para el género.
+    // Creamos el texto del género.
     const genero = document.createElement("p");
     genero.textContent = "Género: " + videojuego.genero;
-
     tarjeta.append(genero);
 
-
-    // Creamos un párrafo para la plataforma.
+    // Creamos el texto de la plataforma.
     const plataforma = document.createElement("p");
     plataforma.textContent = "Plataforma: " + videojuego.plataforma;
-
     tarjeta.append(plataforma);
 
-
-    //MODIFICACION DE LA SESION 12 - B3
-    // Creamos un párrafo para la fecha.
+    // Creamos la fecha con el formato legible en español.
     const fecha = document.createElement("p");
-
     fecha.classList.add("fecha");
+    fecha.textContent = "Lanzamiento: " + fechaLegible(videojuego.fecha);
 
-    fecha.textContent =
-        "Lanzamiento: " +
-        fechaLegible(videojuego.fecha);
+    // Destacamos los videojuegos lanzados en los últimos 30 días.
+    const dias = diasDesde(videojuego.fecha);
 
-    // Si se lanzó hace menos de 30 días,
-    // añadimos la clase "reciente".
-    if (diasDesde(videojuego.fecha) <= DIAS_RECIENTE) {
+    // La condición dias >= 0 evita destacar fechas que todavía no han llegado.
+    if (dias >= 0 && dias <= DIAS_RECIENTE) {
         tarjeta.classList.add("reciente");
     }
 
     tarjeta.append(fecha);
 
-
-    // Creamos la etiqueta del estado de disponibilidad.
+    // Creamos la etiqueta de disponibilidad.
     const estado = document.createElement("span");
+    estado.classList.add("estado");
 
-    // Aplicamos una clase dependiendo de si está disponible.
-    estado.classList.add(
-        "estado",
-        videojuego.disponible
-            ? "disponible"
-            : "no-disponible"
-    );
+    if (videojuego.disponible) {
+        estado.classList.add("disponible");
+    } else {
+        estado.classList.add("no-disponible");
+    }
 
-    // Mostramos el texto correspondiente.
-    estado.textContent = videojuego.disponible
-        ? "Disponible"
-        : "No disponible";
-
+    estado.textContent = videojuego.disponible ? "Disponible" : "No disponible";
     tarjeta.append(estado);
 
+    // Creamos el botón de eliminación.
+    const botonEliminar = document.createElement("button");
+    botonEliminar.classList.add("boton-eliminar");
+    botonEliminar.textContent = "Eliminar";
 
-    // Devolvemos la tarjeta completa.
+    // Al pulsarlo, se elimina el videojuego y se repinta la aplicación.
+    botonEliminar.addEventListener("click", function () {
+        const eliminado = eliminarPorId(videojuegos, videojuego.id);
+
+        if (eliminado) {
+            mostrarMensaje("Videojuego eliminado correctamente.", "correcto");
+            renderizarAplicacion();
+        }
+    });
+
+    tarjeta.append(botonEliminar);
+
     return tarjeta;
 }
 
+/*
+   pintar(lista)
+   -------------
+   Vacía el contenedor #listado y añade una tarjeta por cada
+   videojuego de la lista recibida.
 
-// B2. Pintar una lista de videojuegos
+   Si la lista está vacía, muestra un mensaje en lugar de tarjetas.
+*/
 function pintar(lista) {
-
-    // Seleccionamos el contenedor de las tarjetas.
     const listado = document.querySelector("#listado");
 
-    // Vaciamos el contenedor para evitar duplicados.
+    // Quitamos las tarjetas anteriores para evitar duplicados.
     listado.replaceChildren();
 
-    // Si la lista está vacía, mostramos un mensaje.
     if (lista.length === 0) {
-        const mensaje = document.createElement("p");
-
-        mensaje.classList.add("vacio");
-        mensaje.textContent = "No hay videojuegos para mostrar.";
-
-        listado.append(mensaje);
+        const mensajeVacio = document.createElement("p");
+        mensajeVacio.classList.add("vacio");
+        mensajeVacio.textContent = "No hay videojuegos para mostrar.";
+        listado.append(mensajeVacio);
         return;
     }
 
-    // Recorremos cada videojuego.
+    // Creamos e insertamos una tarjeta para cada videojuego.
     for (const videojuego of lista) {
-
-        // Creamos su tarjeta y la añadimos al contenedor.
         listado.append(crearTarjeta(videojuego));
     }
 }
 
-
-// B3. Mostrar el resumen de la colección
-function mostrarResumen(lista) {
-
-    const resumen = document.querySelector("#resumen");
-
-    // Contamos los videojuegos disponibles.
-    let disponibles = 0;
-
-    for (const videojuego of lista) {
-        if (videojuego.disponible) {
-            disponibles++;
-        }
-    }
-
-    // Calculamos cuántos no están disponibles.
-    const noDisponibles = lista.length - disponibles;
-
-    // Mostramos el resumen.
-    resumen.textContent =
-        "Total de videojuegos: " + lista.length +
-        " | Disponibles: " + disponibles +
-        " | No disponibles: " + noDisponibles;
-}
-
-
-// B4. Mostrar las estadísticas de géneros en la página
-function mostrarEstadisticasEnPagina(lista) {
-
-    const estadisticasPagina =
-        document.querySelector("#estadisticas");
-
-    // Creamos un objeto para contar cada género.
-    const generos = {};
-
-    // Recorremos los videojuegos.
-    for (const videojuego of lista) {
-
-        const genero = videojuego.genero;
-
-        // Inicializamos el contador si el género no existe.
-        if (generos[genero] === undefined) {
-            generos[genero] = 0;
-        }
-
-        // Incrementamos el contador.
-        generos[genero]++;
-    }
-
-    // Convertimos los resultados en una cadena de texto.
-    const textoGeneros = Object.entries(generos)
-        .map(([genero, cantidad]) => genero + ": " + cantidad)
-        .join(" | ");
-
-    // Mostramos los resultados en la página.
-    estadisticasPagina.textContent =
-        "Videojuegos por género: " + textoGeneros;
-}
-
-
-
-
-
-// LLAMADA DE FUNCIONES
-console.log("========== RESULTADOS ==========");
-//listar todo
-listarTodos(videojuegos);
-
-const resultado2021 = filtrar(videojuegos, 2021);
-console.log(`Encontrados hasta 2021: ${resultado2021}`);
-
-const resultado2023 = filtrar(videojuegos, 2023);
-console.log(`Encontrados hasta 2023: ${resultado2023}`);
-
-//contar por categoria
-contarPorCategoria(videojuegos);
-
-//LLAMADAS SESIÓN 8 - PARTE B - RETO 2
-//llamada de buscarPorTexto
-buscarPorTexto(videojuegos, "God of War");
-buscarPorTexto(videojuegos, "mario");
-
-
-
-//mostramos el array en modo tabla
-console.table(videojuegos);
-
-
-console.table(buscarPorTexto(videojuegos, "m"));
-
-//llamada e eliminar por id
-eliminarPorId(videojuegos, 3);  // true
-eliminarPorId(videojuegos, 99); // false
-
-//llamada a listar todo
-listarTodos(videojuegos);
-
-//llamada a la funcion de estadisticas
-estadisticas(videojuegos);
-
-
-// INICIO DE LA APLICACIÓN WEB
-
-
-// Mostramos los 10 videojuegos originales en tarjetas.
-pintar(videojuegos);
-
-// Mostramos el resumen de disponibilidad.
-mostrarResumen(videojuegos);
-
-// Mostramos las cantidades por género.
-mostrarEstadisticasEnPagina(videojuegos);
-
 /*
-===========================
-SESIÓN 11 -  PARTE B/RETO 2
-===========================
+   pintarResumen(mostrados)
+   -----------------------
+   Actualiza el párrafo #resumen.
+   Informa de cuántos videojuegos se muestran o explica
+   que la búsqueda no ha encontrado resultados.
 */
-
-//B2: ESTADO Y ACTUALIZAR
-//Variables de estado
-let textoBuscado = "";
-let criterio = "ninguno";
-
-//Ordena una COPIA de la lista según el criterio
-function ordenar(lista, criterio) {
-
-    //Copiar para no modificar el array original
-    const copia = [...lista];
-
-    if (criterio === "nombre") {
-        //Texto: localeCompare
-        copia.sort((a, b) => a.titulo.localeCompare(b.titulo));
-    } else if (criterio === "numero") {
-        //Número: resta
-        copia.sort((a, b) => a.id - b.id);
-    }
-    //Modificacion Sesion 12 - 4B
-    else if (criterio === "fecha") {
-
-        // Más recientes primero
-        copia.sort((a, b) =>
-            crearFecha(b.fecha) - crearFecha(a.fecha));
-    }
-
-    //Con "ninguno" se devuelve la copia sin ordenar
-    return copia;
-}
-
-
-//B3: EVENTOS
-//Primero se cogen los elementos del HTML por su id
-const buscador = document.querySelector("#buscador");
-const botonNombre = document.querySelector("#ordenNombre");
-const botonNumero = document.querySelector("#ordenNumero");
-const botonFecha = document.querySelector("#ordenFecha");
-const botonAnadir = document.querySelector("#anadirJuego");
-
-
-
-botonFecha.addEventListener(
-    "click",
-    () => elegirOrden("fecha")
-);
-
-//Buscador: se ejecuta cada vez que escribes
-buscador.addEventListener("input", function () {
-    textoBuscado = buscador.value;
-    actualizar();
-});
-
-botonAnadir.addEventListener("click", function () {
-
-    const nuevoVideojuego = {
-        titulo: document.querySelector("#titulo").value,
-        genero: document.querySelector("#genero").value,
-        plataforma: document.querySelector("#plataforma").value,
-        fecha: document.querySelector("#fecha").value,
-        disponible: document.querySelector("#disponible").checked
-    };
-
-    const nuevoId = anadir(videojuegos, nuevoVideojuego);
-
-    if (nuevoId !== false) {
-        alert("Videojuego añadido correctamente");
-
-        // Limpiamos los campos.
-        document.querySelector("#titulo").value = "";
-        document.querySelector("#genero").value = "";
-        document.querySelector("#plataforma").value = "";
-        document.querySelector("#fecha").value = "";
-    }
-});
-
-// Mostramos los videojuegos en tarjetas (con búsqueda y orden)
-actualizar();
-
-// Mostramos el resumen de disponibilidad.
-mostrarResumen(videojuegos);
-
-// Mostramos las cantidades por género.
-mostrarEstadisticasEnPagina(videojuegos);
-
-/*
-===========================
-SESIÓN 11 -  PARTE C/RETO 3
-===========================
-*/
-
 function pintarResumen(mostrados) {
     const resumen = document.querySelector("#resumen");
 
-    if (mostrados > 0) {
-        //Hay resultados: "Mostrando 4 de 10 videojuegos"
-        resumen.textContent =
-            "Mostrando " + mostrados +
-            " de " + videojuegos.length +
-            " videojuegos";
+    if (videojuegos.length === 0) {
+        resumen.textContent = "La biblioteca está vacía.";
+    } else if (mostrados === 0) {
+        resumen.textContent = "No hay videojuegos que contengan '" + textoBuscado + "'.";
     } else {
-        //No hay resultados: mostraremos el texto buscado
-        resumen.textContent =
-            "No hay videojuegos que contengan <<" +
-            textoBuscado + ">>";
+        resumen.textContent = "Mostrando " + mostrados +
+            " de " + videojuegos.length + " videojuegos.";
     }
 }
 
-//LLamamos dentro de actualizar
-function actualizar() {
+/*
+   mostrarEstadisticasEnPagina(lista)
+   ---------------------------------
+   Obtiene las estadísticas y las cantidades por género.
+   Después construye un texto y lo escribe en #estadisticas.
+*/
+function mostrarEstadisticasEnPagina(lista) {
+    const elementoEstadisticas = document.querySelector("#estadisticas");
+    const datos = estadisticas(lista);
+    const datosGeneros = contarPorCategoria(lista);
 
-    const encontrados = buscarPorTexto(
-        videojuegos,
-        textoBuscado
-    );
+    // Primera parte: totales y disponibilidad.
+    let texto = "Total: " + datos.totalVideojuegos +
+        " | Disponibles: " + datos.videojuegosDisponibles +
+        " | No disponibles: " + datos.videojuegosNoDisponibles;
 
-    const ordenados = ordenar(
-        encontrados,
-        criterio
-    );
+    // Si hay elementos, añadimos media, fecha más reciente y más antigua.
+    if (datos.totalVideojuegos > 0) {
+        const mediaRedondeada = Math.round(datos.anioMedioLanzamiento * 10) / 10;
+
+        texto += " | Año medio de lanzamiento: " + mediaRedondeada;
+        texto += " | Más reciente: " + datos.videojuegoMasReciente.titulo;
+        texto += " | Más antiguo: " + datos.videojuegoMasAntiguo.titulo;
+    }
+
+    // Segunda parte: cantidades de cada género.
+    let textoGeneros = "";
+
+    for (const genero of datosGeneros.nombres) {
+        // Añadimos el separador solo a partir del segundo género.
+        if (textoGeneros !== "") {
+            textoGeneros += " | ";
+        }
+
+        textoGeneros += genero + ": " + datosGeneros.cantidades[genero];
+    }
+
+    if (textoGeneros === "") {
+        textoGeneros = "Sin géneros todavía";
+    }
+
+    elementoEstadisticas.textContent = texto +
+        " | Videojuegos por género: " + textoGeneros;
+}
+
+/*
+   mostrarMensaje(texto, tipo)
+   --------------------------
+   Escribe mensajes de validación o confirmación en el párrafo
+   #mensaje. No utiliza alert(): el mensaje aparece dentro de la página.
+
+   tipo puede ser "error" o "correcto".
+*/
+function mostrarMensaje(texto, tipo) {
+    const mensaje = document.querySelector("#mensaje");
+    mensaje.textContent = texto;
+
+    if (tipo === "error") {
+        mensaje.style.color = "#a12323";
+    } else {
+        mensaje.style.color = "#176b30";
+    }
+}
+
+/*
+   limpiarFormulario()
+   -------------------
+   Deja vacíos los campos de texto y fecha después de añadir
+   un videojuego. La disponibilidad vuelve a "Disponible".
+*/
+function limpiarFormulario() {
+    document.querySelector("#titulo").value = "";
+    document.querySelector("#genero").value = "";
+    document.querySelector("#plataforma").value = "";
+    document.querySelector("#fecha").value = "";
+    document.querySelector("#disponible").value = "true";
+}
+
+/*
+   renderizarAplicacion()
+   ---------------------
+   Es el único punto general de actualización de la interfaz.
+   1. Busca en la colección completa.
+   2. Ordena los resultados.
+   3. Pinta las tarjetas.
+   4. Actualiza el resumen.
+   5. Actualiza las estadísticas.
+
+   Los eventos modifican el estado y llaman a esta función.
+*/
+function renderizarAplicacion() {
+    const encontrados = buscarPorTexto(videojuegos, textoBuscado);
+    const ordenados = ordenar(encontrados, criterio);
 
     pintar(ordenados);
-
     pintarResumen(ordenados.length);
+    mostrarEstadisticasEnPagina(videojuegos);
 }
 
-// Mostramos los videojuegos, con búsqueda, orden y resumen.
-actualizar();
 
-// Mostramos las cantidades por género.
-mostrarEstadisticasEnPagina(videojuegos);
-
-/*
-====================================================
-PARTE A - RETO 1
-FUNCIONES PARA GUARDAR Y LEER COOKIES
-====================================================
-*/
-
-// A1. Guardar una cookie
-function guardarCookie(nombre, valor, dias) {
-
-    // Convertimos los días a segundos.
-    const segundos = dias * 24 * 60 * 60;
-
-    // Codificamos el texto para evitar problemas
-    // con espacios o caracteres especiales.
-    const texto = encodeURIComponent(valor);
-
-    // Creamos la cookie indicando:
-    // nombre, valor, duración y ruta.
-    document.cookie =
-        `${nombre}=${texto}; max-age=${segundos}; path=/`;
-}
+// =====================================================
+// 6. INICIO DE LA APLICACIÓN Y CONEXIÓN DE EVENTOS
+// =====================================================
 
 /*
-----------------------------------------------------
-Lee una cookie según su nombre.
-Devuelve el valor encontrado o null si no existe.
-----------------------------------------------------
+   iniciarAplicacion()
+   -------------------
+   Prepara la aplicación cuando el navegador ya ha leído el HTML.
+   El archivo se carga con defer, por lo que los elementos del DOM
+   ya existen cuando se ejecuta esta función.
+
+   También recupera la cookie "orden", conecta los eventos de los
+   controles y realiza el primer pintado.
 */
-function leerCookie(nombre) {
+function iniciarAplicacion() {
+    // Si existe la antigua cookie con la colección, la eliminamos.
+    // Si no existe (por ejemplo, al abrir con file://), no intentamos escribir.
+    eliminarCookie("videojuegos");
 
-    // Obtenemos todas las cookies y las
-    // convertimos en un array.
-    const partes = document.cookie.split("; ");
+    // Recuperamos el criterio de ordenación guardado anteriormente.
+    const ordenGuardado = leerCookie("orden");
 
-    // Recorremos las cookies.
-    for (const parte of partes) {
-
-        // Separamos nombre y valor.
-        const [clave, valor] = parte.split("=");
-
-        // Si encontramos la cookie buscada...
-        if (clave === nombre) {
-
-            // Devolvemos el valor decodificado.
-            return decodeURIComponent(valor);
-        }
+    // Solo aceptamos los tres criterios que utiliza la aplicación.
+    if (ordenGuardado === "nombre" ||
+        ordenGuardado === "numero" ||
+        ordenGuardado === "fecha") {
+        criterio = ordenGuardado;
+    } else {
+        criterio = "ninguno";
     }
 
-    // Si no existe la cookie, devolvemos null.
-    return null;
+    // Pintamos la biblioteca al iniciar, antes de conectar los eventos.
+    // Así las tarjetas aparecen aunque algún control del formulario
+    // tenga un identificador incorrecto.
+    renderizarAplicacion();
+
+    // Seleccionamos los controles HTML que van a tener eventos.
+    const buscador = document.querySelector("#buscador");
+    const botonNombre = document.querySelector("#ordenNombre");
+    const botonNumero = document.querySelector("#ordenNumero");
+    const botonFecha = document.querySelector("#ordenFecha");
+    const botonAnadir = document.querySelector("#anadirJuego");
+
+    // BUSCADOR: se ejecuta cada vez que cambia el contenido del campo.
+    buscador.addEventListener("input", function () {
+        textoBuscado = buscador.value;
+        renderizarAplicacion();
+    });
+
+    // ORDENACIÓN POR NOMBRE.
+    botonNombre.addEventListener("click", function () {
+        elegirOrden("nombre");
+    });
+
+    // ORDENACIÓN POR IDENTIFICADOR.
+    botonNumero.addEventListener("click", function () {
+        elegirOrden("numero");
+    });
+
+    // ORDENACIÓN POR FECHA DE LANZAMIENTO.
+    botonFecha.addEventListener("click", function () {
+        elegirOrden("fecha");
+    });
+
+    // FORMULARIO: recoge los valores y crea el objeto nuevo.
+    botonAnadir.addEventListener("click", function () {
+        const nuevoVideojuego = {
+            titulo: document.querySelector("#titulo").value,
+            genero: document.querySelector("#genero").value,
+            plataforma: document.querySelector("#plataforma").value,
+            fecha: document.querySelector("#fecha").value,
+            // El desplegable devuelve texto; lo convertimos a booleano.
+            disponible: document.querySelector("#disponible").value === "true"
+        };
+
+        // Validamos el título antes de llamar a la función de alta.
+        if (!validarTitulo(nuevoVideojuego.titulo)) {
+            mostrarMensaje(
+                "El título debe tener entre 3 y 50 caracteres y utilizar caracteres válidos.",
+                "error"
+            );
+            return;
+        }
+
+        // Comprobamos que los demás campos obligatorios estén completos.
+        if (nuevoVideojuego.genero === "" ||
+            nuevoVideojuego.plataforma === "" ||
+            nuevoVideojuego.fecha === "") {
+            mostrarMensaje("Debes completar todos los campos.", "error");
+            return;
+        }
+
+        // anadir devuelve el nuevo ID o false si no se pudo añadir.
+        const nuevoId = anadir(videojuegos, nuevoVideojuego);
+
+        if (nuevoId !== false) {
+            limpiarFormulario();
+            mostrarMensaje("Videojuego añadido correctamente.", "correcto");
+            renderizarAplicacion();
+        }
+    });
+
 }
 
 
-/*
-====================================================
-A2. GUARDAR EL ORDEN AL PULSAR UN BOTÓN
-====================================================
-*/
+// =====================================================
+// 7. EJECUCIÓN INICIAL
+// =====================================================
 
-// Cambia el criterio de ordenación,
-// lo guarda en una cookie y actualiza
-// la interfaz. Al recargar la página 
-// se quedara seleccionada segun el tipo de busqueda aplicada
-function elegirOrden(nuevo) {
-
-    // Actualizamos el criterio.
-    criterio = nuevo;
-
-    // Guardamos el criterio durante 30 días.
-    guardarCookie("orden", criterio, 30);
-
-    // Refrescamos la lista.
-    actualizar();
-}
-
-/*
-====================================================
-EVENTOS DE LOS BOTONES DE ORDENACIÓN
-====================================================
-*/
-
-// Botón para ordenar por nombre (A-Z).
-document
-    .querySelector("#ordenNombre")
-    .addEventListener("click", () => elegirOrden("nombre"));
-
-// Botón para ordenar por ID.
-document
-    .querySelector("#ordenNumero")
-    .addEventListener("click", () => elegirOrden("numero"));
-
-/*
-====================================================
-A3. APLICAR EL ORDEN AL CARGAR LA PÁGINA
-====================================================
-
-Prueba en la consola:
-
-document.cookie = "tema=oscuro";
-
-Después ejecuta:
-
-console.log(document.cookie);
-
-Deberías ver algo parecido a:
-
-tema=oscuro; orden=nombre
-
-o
-
-tema=oscuro; orden=numero
-
-Si has borrado la cookie "orden",
-solamente aparecerá:
-
-tema=oscuro
-
-====================================================
-RECUPERAR EL ÚLTIMO CRITERIO DE ORDENACIÓN
-====================================================
-*/
-
-// Leemos la cookie "orden".
-// Si no existe, usamos "ninguno".
-criterio = leerCookie("orden") ?? "ninguno";
-
-// Mostramos los videojuegos aplicando
-// el orden guardado en la cookie.
-actualizar();
-
+// Esta llamada inicia la aplicación, conecta los eventos y pinta la lista.
+iniciarAplicacion();

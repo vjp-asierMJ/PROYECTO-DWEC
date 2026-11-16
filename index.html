@@ -5,24 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="css/estilos.css">
+    <script src="js/app.js" defer></script>
 </head>
 <body>
+    <header>
+        <h1>Mi biblioteca de videojuegos</h1>
+        <p id="resumen" aria-live="polite"></p>
+        <p id="estadisticas"></p>
+    </header>
 
-    <section class="controles">
-
+    <section class="controles" aria-label="Búsqueda y ordenación">
+        <label class="solo-lectores" for="buscador">Buscar videojuegos</label>
         <input id="buscador" type="search" placeholder="Buscar...">
-
-        <button id="ordenNombre">Ordenar A-Z</button>
-
-        <button id="ordenNumero">Ordenar por índice</button>
-
-        <button id="ordenFecha">Más recientes primero</button>
-
+        <button id="ordenNombre" type="button">Ordenar A-Z</button>
+        <button id="ordenNumero" type="button">Ordenar por índice</button>
+        <button id="ordenFecha" type="button">Más recientes primero</button>
     </section>
 
-    <section id="formulario">
-
-        <h2>Añadir un videojuego</h2>
+    <section id="formulario" aria-labelledby="titulo-formulario">
+        <h2 id="titulo-formulario">Añadir un videojuego</h2>
 
         <label for="titulo">Título:</label>
         <input type="text" id="titulo" placeholder="Nombre del videojuego">
@@ -36,30 +37,16 @@
         <label for="fecha">Fecha de lanzamiento:</label>
         <input type="date" id="fecha">
 
-        <label for="disponible">
-            <input type="checkbox" id="disponible" checked>
-            Disponible
-        </label>
+        <label for="disponible">Disponibilidad:</label>
+        <select id="disponible">
+            <option value="true" selected>Disponible</option>
+            <option value="false">No disponible</option>
+        </select>
 
-        <button id="anadirJuego" type="button">
-            Añadir videojuego
-        </button>
-
+        <button id="anadirJuego" type="button">Añadir videojuego</button>
+        <p id="mensaje" class="mensaje" aria-live="polite"></p>
     </section>
 
-    <header>
-
-        <h1>Mi biblioteca de videojuegos</h1>
-
-        <p id="resumen"></p>
-
-        <p id="estadisticas"></p>
-
-    </header>
-
-    <main id="listado"></main>
-
-    <script src="js/app.js" defer></script>
-
+    <main id="listado" aria-label="Listado de videojuegos"></main>
 </body>
 </html>
