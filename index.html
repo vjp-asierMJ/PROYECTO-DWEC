@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="css/estilos.css">
-    <script src="js/app.js" defer></script>
 </head>
 <body>
     <header>
@@ -22,7 +21,7 @@
         <button id="ordenFecha" type="button">Más recientes primero</button>
     </section>
 
-    <section id="formulario" aria-labelledby="titulo-formulario">
+    <form id="formulario" aria-labelledby="titulo-formulario">
         <h2 id="titulo-formulario">Añadir un videojuego</h2>
 
         <label for="titulo">Título:</label>
@@ -43,10 +42,13 @@
             <option value="false">No disponible</option>
         </select>
 
-        <button id="anadirJuego" type="button">Añadir videojuego</button>
+        <button id="anadirJuego" type="submit">Añadir videojuego</button>
         <p id="mensaje" class="mensaje" aria-live="polite"></p>
-    </section>
+    </form>
 
     <main id="listado" aria-label="Listado de videojuegos"></main>
+
+    <!-- En HTML se carga solo interfaz.js. Los otros módulos se importan desde él. -->
+    <script type="module" src="js/interfaz.js"></script>
 </body>
 </html>

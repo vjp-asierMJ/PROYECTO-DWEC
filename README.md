@@ -99,13 +99,16 @@ Cada tarjeta dispone de un botón **Eliminar**. Al pulsarlo, se elimina ese vide
 ## Estructura del proyecto
 
 ```text
-biblioteca-videojuegos-sprint2/
+PROYECTO-DWEC/
 ├── index.html
 ├── README.md
 ├── css/
 │   └── estilos.css
 └── js/
-    └── app.js
+    ├── datos.js
+    ├── interfaz.js
+    └── logica.js
+
 ```
 
 ## Uso de herramientas de inteligencia artificial
