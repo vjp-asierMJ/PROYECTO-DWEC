@@ -6,8 +6,11 @@
    y conecta los eventos del buscador, los botones y el formulario.
    ===================================================== */
 
-// Importamos únicamente el array desde datos.js.
-import { videojuegos } from "./datos.js";
+// Importamos el array de datos sencillos desde datos.js.
+import { datosVideojuegos } from "./datos.js";
+
+// Importamos la clase que convierte cada dato en una instancia.
+import { Videojuego } from "./videojuego.js";
 
 // Importamos las funciones que trabajan con los datos.
 import {
@@ -23,6 +26,14 @@ import {
 
 // Número de días que se utiliza para destacar un videojuego reciente.
 const DIAS_RECIENTE = 30;
+
+// La colección ahora es un array de instancias de Videojuego.
+// Se llama igual que antes para no cambiar el resto del código.
+// Si un dato no pasa la validación del setter, aquí saldrá el error.
+const videojuegos = [];
+for (const datos of datosVideojuegos) {
+    videojuegos.push(new Videojuego(datos));
+}
 
 // -----------------------------------------------------
 // 1. ESTADO DE LA INTERFAZ
@@ -86,13 +97,10 @@ function crearTarjeta(videojuego) {
     titulo.textContent = videojuego.titulo;
     tarjeta.append(titulo);
 
-    const genero = document.createElement("p");
-    genero.textContent = "Género: " + videojuego.genero;
-    tarjeta.append(genero);
-
-    const plataforma = document.createElement("p");
-    plataforma.textContent = "Plataforma: " + videojuego.plataforma;
-    tarjeta.append(plataforma);
+    // El texto lo monta el método descripcion() de la clase.
+    const descripcion = document.createElement("p");
+    descripcion.textContent = videojuego.descripcion();
+    tarjeta.append(descripcion);
 
     const fecha = document.createElement("p");
     fecha.classList.add("fecha");
@@ -115,9 +123,8 @@ function crearTarjeta(videojuego) {
         estado.classList.add("no-disponible");
     }
 
-    estado.textContent = videojuego.disponible
-        ? "Disponible"
-        : "No disponible";
+    // El getter estadoTexto se lee sin paréntesis.
+    estado.textContent = videojuego.estadoTexto;
     tarjeta.append(estado);
 
     // El botón elimina este videojuego y actualiza la página.
@@ -302,13 +309,17 @@ function iniciarAplicacion() {
     formulario.addEventListener("submit", function (evento) {
         evento.preventDefault();
 
-        const nuevoVideojuego = {
+        // Ahora el nuevo videojuego también es una instancia de la clase.
+        // El id 1 es provisional: anadir() lo sustituye por el siguiente
+        // identificador libre (y el setter comprueba que sea válido).
+        const nuevoVideojuego = new Videojuego({
+            id: 1,
             titulo: document.querySelector("#titulo").value,
             genero: document.querySelector("#genero").value,
             plataforma: document.querySelector("#plataforma").value,
             fecha: document.querySelector("#fecha").value,
             disponible: document.querySelector("#disponible").value === "true"
-        };
+        });
 
         const nuevoId = anadir(videojuegos, nuevoVideojuego);
 

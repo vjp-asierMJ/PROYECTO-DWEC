@@ -1,11 +1,13 @@
 /* =====================================================
    DATOS DE LA BIBLIOTECA DE VIDEOJUEGOS
 
-   Este módulo contiene únicamente el array de la colección.
-   Se exporta para que interfaz.js pueda utilizarlo.
+   Este módulo contiene únicamente el array de datos iniciales.
+   Son objetos sencillos: la clase Videojuego los convierte en
+   instancias (ver interfaz.js). Se exporta para que interfaz.js
+   pueda utilizarlo.
    ===================================================== */
 
-export const videojuegos = [
+export const datosVideojuegos = [
     {
         id: 1,
         titulo: "The Legend of Zelda: Echoes of Time",
