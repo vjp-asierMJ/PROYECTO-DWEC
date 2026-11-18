@@ -15,7 +15,6 @@ import { Videojuego } from "./videojuego.js";
 // Importamos las funciones que trabajan con los datos.
 import {
     fechaLegible,
-    diasDesde,
     buscarPorTexto,
     contarPorCategoria,
     anadir,
@@ -106,9 +105,8 @@ function crearTarjeta(videojuego) {
     fecha.classList.add("fecha");
     fecha.textContent = "Lanzamiento: " + fechaLegible(videojuego.fecha);
 
-    const dias = diasDesde(videojuego.fecha);
-
-    if (dias >= 0 && dias <= DIAS_RECIENTE) {
+    // El método de la clase decide si la tarjeta se destaca como reciente.
+    if (videojuego.esReciente(DIAS_RECIENTE)) {
         tarjeta.classList.add("reciente");
     }
 

@@ -5,6 +5,9 @@
    Cada elemento de la colección es una instancia (new Videojuego(...)).
    ===================================================== */
 
+// Importamos la función que calcula los días transcurridos desde una fecha.
+import { diasDesde } from "./logica.js";
+
 export class Videojuego {
     // El constructor recibe un objeto de datos y copia cada campo con this.
     constructor(datos) {
@@ -45,5 +48,14 @@ export class Videojuego {
     // Método que devuelve el texto de la tarjeta.
     descripcion() {
         return `Género: ${this.genero} · Plataforma: ${this.plataforma}`;
+    }
+
+    // Método que calcula con los datos de la instancia (this.fecha).
+    // Devuelve true si se lanzó hace "dias" días o menos, y false si no.
+    // Un videojuego que aún no ha salido (días negativos) no es reciente.
+    esReciente(dias) {
+        const transcurridos = diasDesde(this.fecha);
+
+        return transcurridos >= 0 && transcurridos <= dias;
     }
 }
