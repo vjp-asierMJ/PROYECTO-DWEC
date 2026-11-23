@@ -1,15 +1,14 @@
-/* =====================================================
-   CLASE VIDEOJUEGO
-
-   Es el molde de cada videojuego de la biblioteca.
-   Cada elemento de la colección es una instancia (new Videojuego(...)).
-   ===================================================== */
+// Clase que representa cada videojuego de la biblioteca.
 
 // Importamos la función que calcula los días transcurridos desde una fecha.
 import { diasDesde } from "./logica.js";
 
 export class Videojuego {
-    // El constructor recibe un objeto de datos y copia cada campo con this.
+
+    /**
+     * Crea un videojuego a partir de un objeto con sus datos.
+     * @param {Object} datos - Datos del videojuego.
+     */
     constructor(datos) {
         this.titulo = datos.titulo;
         this.genero = datos.genero;
@@ -21,14 +20,20 @@ export class Videojuego {
         this.id = datos.id;
     }
 
-    // Getter: se lee como una propiedad, sin paréntesis (videojuego.id).
+    /**
+     * Devuelve el identificador del videojuego.
+     * @returns {number} Identificador del videojuego.
+     */
     get id() {
         // La propiedad interna lleva _ delante para que el setter
         // no se llame a sí mismo sin fin.
         return this._id;
     }
 
-    // Setter: se ejecuta al asignar (this.id = ... o videojuego.id = ...).
+    /**
+     * Comprueba que el identificador sea un número mayor que cero y lo guarda.
+     * @param {number} valor - Identificador que se quiere asignar.
+     */
     set id(valor) {
         // Solo se admiten números mayores que 0.
         if (typeof valor !== "number" || valor <= 0) {
@@ -37,7 +42,10 @@ export class Videojuego {
         this._id = valor;
     }
 
-    // Getter que calcula un texto: videojuego.estadoTexto (sin paréntesis).
+    /**
+     * Devuelve el estado del videojuego en forma de texto.
+     * @returns {string} Estado de disponibilidad.
+     */
     get estadoTexto() {
         if (this.disponible) {
             return "Disponible";
@@ -45,14 +53,19 @@ export class Videojuego {
         return "No disponible";
     }
 
-    // Método que devuelve el texto de la tarjeta.
+    /**
+     * Devuelve el género y la plataforma del videojuego.
+     * @returns {string} Descripción del videojuego.
+     */
     descripcion() {
         return `Género: ${this.genero} · Plataforma: ${this.plataforma}`;
     }
 
-    // Método que calcula con los datos de la instancia (this.fecha).
-    // Devuelve true si se lanzó hace "dias" días o menos, y false si no.
-    // Un videojuego que aún no ha salido (días negativos) no es reciente.
+    /**
+     * Comprueba si el videojuego se lanzó dentro del número de días indicado.
+     * @param {number} dias - Número máximo de días transcurridos.
+     * @returns {boolean} true si es reciente y false si no lo es.
+     */
     esReciente(dias) {
         const transcurridos = diasDesde(this.fecha);
 

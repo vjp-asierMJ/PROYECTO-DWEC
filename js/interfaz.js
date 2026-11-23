@@ -6,19 +6,15 @@
    y conecta los eventos del buscador, los botones y el formulario.
    ===================================================== */
 
-// Importamos el array de datos sencillos desde datos.js.
+// Importamos los datos iniciales y las clases del proyecto.
 import { datosVideojuegos } from "./datos.js";
-
-// Importamos la clase que convierte cada dato en una instancia.
 import { Videojuego } from "./videojuego.js";
+import { Biblioteca } from "./biblioteca.js";
 
 // Importamos las funciones que trabajan con los datos.
 import {
     fechaLegible,
-    buscarPorTexto,
     contarPorCategoria,
-    anadir,
-    eliminarPorId,
     estadisticas,
     ordenar
 } from "./logica.js";
@@ -26,13 +22,8 @@ import {
 // Número de días que se utiliza para destacar un videojuego reciente.
 const DIAS_RECIENTE = 30;
 
-// La colección ahora es un array de instancias de Videojuego.
-// Se llama igual que antes para no cambiar el resto del código.
-// Si un dato no pasa la validación del setter, aquí saldrá el error.
-const videojuegos = [];
-for (const datos of datosVideojuegos) {
-    videojuegos.push(new Videojuego(datos));
-}
+// Creamos la biblioteca convirtiendo los datos en instancias de Videojuego.
+const biblioteca = Biblioteca.desdeDatos(datosVideojuegos);
 
 // -----------------------------------------------------
 // 1. ESTADO DE LA INTERFAZ
@@ -132,7 +123,7 @@ function crearTarjeta(videojuego) {
     botonEliminar.textContent = "Eliminar";
 
     botonEliminar.addEventListener("click", function () {
-        const eliminado = eliminarPorId(videojuegos, videojuego.id);
+        const eliminado = biblioteca.eliminar(videojuego.id);
 
         if (eliminado) {
             mostrarMensaje("Videojuego eliminado correctamente.", "correcto");
@@ -171,14 +162,14 @@ function pintar(lista) {
 function pintarResumen(mostrados) {
     const resumen = document.querySelector("#resumen");
 
-    if (videojuegos.length === 0) {
+    if (biblioteca.total === 0) {
         resumen.textContent = "La biblioteca está vacía.";
     } else if (mostrados === 0) {
         resumen.textContent =
             "No hay videojuegos que contengan '" + textoBuscado + "'.";
     } else {
         resumen.textContent = "Mostrando " + mostrados +
-            " de " + videojuegos.length + " videojuegos.";
+            " de " + biblioteca.total + " videojuegos.";
     }
 }
 
@@ -246,12 +237,12 @@ function limpiarFormulario() {
 
 /* Busca, ordena, pinta las tarjetas, el resumen y las estadísticas. */
 function actualizar() {
-    const encontrados = buscarPorTexto(videojuegos, textoBuscado);
+    const encontrados = biblioteca.buscar(textoBuscado);
     const ordenados = ordenar(encontrados, criterio);
 
     pintar(ordenados);
     pintarResumen(ordenados.length);
-    pintarEstadisticas(videojuegos);
+    pintarEstadisticas(biblioteca.listar());
 }
 
 /* Cambia el criterio, actualiza la página y guarda únicamente el orden. */
@@ -319,7 +310,7 @@ function iniciarAplicacion() {
             disponible: document.querySelector("#disponible").value === "true"
         });
 
-        const nuevoId = anadir(videojuegos, nuevoVideojuego);
+        const nuevoId = biblioteca.anadir(nuevoVideojuego);
 
         if (nuevoId === false) {
             mostrarMensaje(
