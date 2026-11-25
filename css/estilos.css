@@ -180,8 +180,7 @@ button:focus-visible {
 
     /* Dos parejas de etiqueta y campo por fila */
     grid-template-columns:
-        minmax(120px, 170px) minmax(0, 1fr)
-        minmax(120px, 170px) minmax(0, 1fr);
+        minmax(120px, 170px) minmax(0, 1fr) minmax(120px, 170px) minmax(0, 1fr);
 
     align-items: center;
     gap: 10px 16px;
@@ -286,10 +285,8 @@ button:focus-visible {
 #listado {
     display: grid;
 
-    grid-template-columns: repeat(
-        auto-fill,
-        minmax(min(100%, 260px), 1fr)
-    );
+    grid-template-columns: repeat(auto-fill,
+            minmax(min(100%, 260px), 1fr));
 
     align-items: stretch;
     gap: 20px;
@@ -461,5 +458,39 @@ button:focus-visible {
 
     #listado {
         grid-template-columns: 1fr;
+    }
+}
+
+#estadisticas {
+    .titulo-estadisticas {
+        margin: 18px 0 10px;
+        font-size: 1.1rem;
+    }
+
+    #estadisticas {
+        display: grid;
+        grid-template-columns: repeat(auto-fit,
+                minmax(190px, 1fr));
+
+        gap: 10px;
+
+        margin: 0;
+        padding: 0;
+
+        list-style: none;
+    }
+
+    #estadisticas li {
+        min-height: 54px;
+        padding: 12px 14px;
+
+        border: 1px solid var(--borde);
+        border-radius: 10px;
+
+        background-color: #f7f9fc;
+        color: var(--texto-secundario);
+
+        font-size: 0.92rem;
+        font-weight: 600;
     }
 }

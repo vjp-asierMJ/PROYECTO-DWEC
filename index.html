@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
+
 <body>
     <header>
         <h1>Mi biblioteca de videojuegos</h1>
         <p id="resumen" aria-live="polite"></p>
-        <p id="estadisticas"></p>
+        <h2 class="titulo-estadisticas">
+            Estadísticas de la biblioteca
+        </h2>
+
+        <ul id="estadisticas" 
+            class="panel-estadisticas" 
+            aria-live="polite">
+        </ul>
     </header>
 
     <section class="controles" aria-label="Búsqueda y ordenación">
@@ -51,4 +60,5 @@
     <!-- En HTML se carga solo interfaz.js. Los otros módulos se importan desde él. -->
     <script type="module" src="js/interfaz.js"></script>
 </body>
+
 </html>

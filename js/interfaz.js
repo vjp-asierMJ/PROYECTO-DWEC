@@ -6,24 +6,23 @@
    y conecta los eventos del buscador, los botones y el formulario.
    ===================================================== */
 
-// Importamos los datos iniciales y las clases del proyecto.
+// Importamos los datos iniciales y las clases.
 import { datosVideojuegos } from "./datos.js";
 import { Videojuego } from "./videojuego.js";
 import { Biblioteca } from "./biblioteca.js";
 
-// Importamos las funciones que trabajan con los datos.
+// Importamos las funciones de lógica.
 import {
     fechaLegible,
-    contarPorCategoria,
-    estadisticas,
     ordenar
 } from "./logica.js";
 
-// Número de días que se utiliza para destacar un videojuego reciente.
+// Días para destacar un videojuego reciente.
 const DIAS_RECIENTE = 30;
 
-// Creamos la biblioteca convirtiendo los datos en instancias de Videojuego.
+// Creamos la biblioteca.
 const biblioteca = Biblioteca.desdeDatos(datosVideojuegos);
+
 
 // -----------------------------------------------------
 // 1. ESTADO DE LA INTERFAZ
@@ -32,12 +31,14 @@ const biblioteca = Biblioteca.desdeDatos(datosVideojuegos);
 let textoBuscado = "";
 let criterio = "ninguno";
 
+
 // -----------------------------------------------------
 // 2. FUNCIONES DE COOKIES
 // -----------------------------------------------------
 
 /* Guarda una cookie durante el número de días indicado. */
 function guardarCookie(nombre, valor, dias) {
+
     const segundos = dias * 24 * 60 * 60;
     const texto = encodeURIComponent(valor);
 
@@ -45,11 +46,13 @@ function guardarCookie(nombre, valor, dias) {
         "; max-age=" + segundos + "; path=/";
 }
 
-/* Busca una cookie por su nombre. Devuelve null si no existe. */
+
 function leerCookie(nombre) {
+
     const partes = document.cookie.split("; ");
 
     for (const parte of partes) {
+
         const [clave, valor] = parte.split("=");
 
         if (clave === nombre) {
@@ -60,11 +63,13 @@ function leerCookie(nombre) {
     return null;
 }
 
-/* Elimina una cookie antigua solo si todavía existe. */
+
 function eliminarCookie(nombre) {
+
     const partes = document.cookie.split("; ");
 
     for (const parte of partes) {
+
         const [clave] = parte.split("=");
 
         if (clave === nombre) {
@@ -74,12 +79,14 @@ function eliminarCookie(nombre) {
     }
 }
 
+
 // -----------------------------------------------------
 // 3. CREACIÓN Y PINTADO DE TARJETAS
 // -----------------------------------------------------
 
 /* Crea una tarjeta HTML para un videojuego y devuelve el article. */
 function crearTarjeta(videojuego) {
+
     const tarjeta = document.createElement("article");
     tarjeta.classList.add("tarjeta");
 
@@ -94,9 +101,11 @@ function crearTarjeta(videojuego) {
 
     const fecha = document.createElement("p");
     fecha.classList.add("fecha");
-    fecha.textContent = "Lanzamiento: " + fechaLegible(videojuego.fecha);
 
-    // El método de la clase decide si la tarjeta se destaca como reciente.
+    fecha.textContent =
+        "Lanzamiento: " + fechaLegible(videojuego.fecha);
+
+// El método de la clase decide si la tarjeta se destaca como reciente.
     if (videojuego.esReciente(DIAS_RECIENTE)) {
         tarjeta.classList.add("reciente");
     }
@@ -116,17 +125,24 @@ function crearTarjeta(videojuego) {
     estado.textContent = videojuego.estadoTexto;
     tarjeta.append(estado);
 
-    // El botón elimina este videojuego y actualiza la página.
+    // Botón para eliminar el videojuego.
     const botonEliminar = document.createElement("button");
+
     botonEliminar.type = "button";
     botonEliminar.classList.add("boton-eliminar");
     botonEliminar.textContent = "Eliminar";
 
     botonEliminar.addEventListener("click", function () {
+
         const eliminado = biblioteca.eliminar(videojuego.id);
 
         if (eliminado) {
-            mostrarMensaje("Videojuego eliminado correctamente.", "correcto");
+
+            mostrarMensaje(
+                "Videojuego eliminado correctamente.",
+                "correcto"
+            );
+
             actualizar();
         }
     });
@@ -136,16 +152,24 @@ function crearTarjeta(videojuego) {
     return tarjeta;
 }
 
-/* Vacía el listado y pinta una tarjeta por cada videojuego recibido. */
+
+// Pinta las tarjetas de videojuegos.
 function pintar(lista) {
+
     const listado = document.querySelector("#listado");
+
     listado.replaceChildren();
 
     if (lista.length === 0) {
+
         const mensajeVacio = document.createElement("p");
+
         mensajeVacio.classList.add("vacio");
-        mensajeVacio.textContent = "No hay videojuegos para mostrar.";
+        mensajeVacio.textContent =
+            "No hay videojuegos para mostrar.";
+
         listado.append(mensajeVacio);
+
         return;
     }
 
@@ -154,76 +178,120 @@ function pintar(lista) {
     }
 }
 
+
 // -----------------------------------------------------
-// 4. RESUMEN Y ESTADÍSTICAS EN LA PÁGINA
+// 4. RESUMEN Y ESTADÍSTICAS
 // -----------------------------------------------------
 
-/* Muestra cuántos videojuegos aparecen en el listado. */
+// Muestra cuántos videojuegos aparecen.
 function pintarResumen(mostrados) {
+
     const resumen = document.querySelector("#resumen");
 
     if (biblioteca.total === 0) {
+
         resumen.textContent = "La biblioteca está vacía.";
+
     } else if (mostrados === 0) {
+
         resumen.textContent =
-            "No hay videojuegos que contengan '" + textoBuscado + "'.";
+            "No hay videojuegos que contengan '" +
+            textoBuscado + "'.";
+
     } else {
-        resumen.textContent = "Mostrando " + mostrados +
+
+        resumen.textContent =
+            "Mostrando " + mostrados +
             " de " + biblioteca.total + " videojuegos.";
     }
 }
 
-/* Muestra los totales, las fechas y las cantidades por género. */
-function pintarEstadisticas(lista) {
-    const elementoEstadisticas = document.querySelector("#estadisticas");
-    const datos = estadisticas(lista);
-    const datosGeneros = contarPorCategoria(lista);
 
-    let texto = "Total: " + datos.totalVideojuegos +
-        " | Disponibles: " + datos.videojuegosDisponibles +
-        " | No disponibles: " + datos.videojuegosNoDisponibles;
+// Pinta las estadísticas de la biblioteca.
+function pintarEstadisticas() {
 
-    if (datos.totalVideojuegos > 0) {
-        const mediaRedondeada =
-            Math.round(datos.anioMedioLanzamiento * 10) / 10;
+    const panel = document.querySelector("#estadisticas");
 
-        texto += " | Año medio de lanzamiento: " + mediaRedondeada;
-        texto += " | Más reciente: " + datos.videojuegoMasReciente.titulo;
-        texto += " | Más antiguo: " + datos.videojuegoMasAntiguo.titulo;
+    // Vacía el panel antes de actualizarlo.
+    panel.replaceChildren();
+
+    // La clase gestora calcula los datos.
+    const datos = biblioteca.estadisticas();
+
+    // Si no hay videojuegos, muestra un aviso.
+    if (datos === null) {
+
+        const aviso = document.createElement("li");
+
+        aviso.textContent =
+            "Todavía no hay estadísticas. Añade algún videojuego.";
+
+        panel.append(aviso);
+
+        return;
     }
 
-    let textoGeneros = "";
+    const anioMedio =
+        Math.round(datos.anioMedioLanzamiento * 10) / 10;
 
-    for (const genero of datosGeneros.nombres) {
-        if (textoGeneros !== "") {
-            textoGeneros += " | ";
-        }
+    // Preparamos los datos que se mostrarán.
+    const lineas = [
 
-        textoGeneros += genero + ": " + datosGeneros.cantidades[genero];
+        "Total de videojuegos: " +
+        datos.totalVideojuegos,
+
+        "Disponibles: " +
+        datos.videojuegosDisponibles,
+
+        "No disponibles: " +
+        datos.videojuegosNoDisponibles,
+
+        "Año medio de lanzamiento: " +
+        anioMedio,
+
+        "Lanzamiento más reciente: " +
+        datos.videojuegoMasReciente.titulo,
+
+        "Lanzamiento más antiguo: " +
+        datos.videojuegoMasAntiguo.titulo
+    ];
+
+    // Creamos un li por cada estadística.
+    for (const linea of lineas) {
+
+        const elemento = document.createElement("li");
+
+        elemento.textContent = linea;
+
+        panel.append(elemento);
     }
-
-    if (textoGeneros === "") {
-        textoGeneros = "Sin géneros todavía";
-    }
-
-    elementoEstadisticas.textContent = texto +
-        " | Videojuegos por género: " + textoGeneros;
 }
 
-/* Muestra mensajes de validación y confirmación en la página. */
+
+// -----------------------------------------------------
+// 5. MENSAJES Y FORMULARIO
+// -----------------------------------------------------
+
 function mostrarMensaje(texto, tipo) {
+
     const mensaje = document.querySelector("#mensaje");
+
     mensaje.textContent = texto;
 
     if (tipo === "error") {
+
         mensaje.style.color = "#a12323";
+
     } else {
+
         mensaje.style.color = "#176b30";
     }
 }
 
-/* Limpia los campos del formulario después de añadir un videojuego. */
+
+// Limpia los campos del formulario.
 function limpiarFormulario() {
+
     document.querySelector("#titulo").value = "";
     document.querySelector("#genero").value = "";
     document.querySelector("#plataforma").value = "";
@@ -231,36 +299,47 @@ function limpiarFormulario() {
     document.querySelector("#disponible").value = "true";
 }
 
-// -----------------------------------------------------
-// 5. ACTUALIZACIÓN GENERAL DE LA INTERFAZ
-// -----------------------------------------------------
 
+// -----------------------------------------------------
+// 6. ACTUALIZACIÓN GENERAL
+// -----------------------------------------------------
 /* Busca, ordena, pinta las tarjetas, el resumen y las estadísticas. */
 function actualizar() {
+
     const encontrados = biblioteca.buscar(textoBuscado);
+
     const ordenados = ordenar(encontrados, criterio);
 
     pintar(ordenados);
+
     pintarResumen(ordenados.length);
-    pintarEstadisticas(biblioteca.listar());
+
+    // También actualizamos el panel de estadísticas.
+    pintarEstadisticas();
 }
 
-/* Cambia el criterio, actualiza la página y guarda únicamente el orden. */
+
+// Cambia el criterio de ordenación.
 function elegirOrden(nuevoCriterio) {
+
     criterio = nuevoCriterio;
+
     actualizar();
+
     guardarCookie("orden", criterio, 30);
 }
 
+
 // -----------------------------------------------------
-// 6. EVENTOS E INICIO DE LA APLICACIÓN
+// 7. EVENTOS E INICIO DE LA APLICACIÓN
 // -----------------------------------------------------
 
 function iniciarAplicacion() {
-    // Elimina la antigua cookie que guardaba toda la colección, si existe.
+
+    // Eliminamos una antigua cookie si existe.
     eliminarCookie("videojuegos");
 
-    // Recupera y comprueba el criterio de ordenación guardado.
+    // Recuperamos el criterio de ordenación.
     const ordenGuardado = leerCookie("orden");
 
     if (
@@ -268,66 +347,107 @@ function iniciarAplicacion() {
         ordenGuardado === "numero" ||
         ordenGuardado === "fecha"
     ) {
+
         criterio = ordenGuardado;
+
     } else {
+
         criterio = "ninguno";
     }
 
-    // Conectamos el buscador.
+
+    // Buscador.
     const buscador = document.querySelector("#buscador");
+
     buscador.addEventListener("input", function () {
+
         textoBuscado = buscador.value;
+
         actualizar();
     });
 
-    // Conectamos los tres botones de ordenación.
-    document.querySelector("#ordenNombre").addEventListener("click", function () {
-        elegirOrden("nombre");
-    });
 
-    document.querySelector("#ordenNumero").addEventListener("click", function () {
-        elegirOrden("numero");
-    });
+    // Botón ordenar por nombre.
+    document.querySelector("#ordenNombre")
+        .addEventListener("click", function () {
 
-    document.querySelector("#ordenFecha").addEventListener("click", function () {
-        elegirOrden("fecha");
-    });
-
-    // El formulario utiliza submit para permitir también el envío con Enter.
-    const formulario = document.querySelector("#formulario");
-    formulario.addEventListener("submit", function (evento) {
-        evento.preventDefault();
-
-        // Ahora el nuevo videojuego también es una instancia de la clase.
-        // El id 1 es provisional: anadir() lo sustituye por el siguiente
-        // identificador libre (y el setter comprueba que sea válido).
-        const nuevoVideojuego = new Videojuego({
-            id: 1,
-            titulo: document.querySelector("#titulo").value,
-            genero: document.querySelector("#genero").value,
-            plataforma: document.querySelector("#plataforma").value,
-            fecha: document.querySelector("#fecha").value,
-            disponible: document.querySelector("#disponible").value === "true"
+            elegirOrden("nombre");
         });
 
+
+    // Botón ordenar por número.
+    document.querySelector("#ordenNumero")
+        .addEventListener("click", function () {
+
+            elegirOrden("numero");
+        });
+
+
+    // Botón ordenar por fecha.
+    document.querySelector("#ordenFecha")
+        .addEventListener("click", function () {
+
+            elegirOrden("fecha");
+        });
+
+
+    // Formulario para añadir videojuegos.
+    const formulario = document.querySelector("#formulario");
+
+    formulario.addEventListener("submit", function (evento) {
+
+        evento.preventDefault();
+
+        // Creamos una instancia de Videojuego.
+        const nuevoVideojuego = new Videojuego({
+
+            id: 1,
+
+            titulo: document.querySelector("#titulo").value,
+
+            genero: document.querySelector("#genero").value,
+
+            plataforma: document.querySelector("#plataforma").value,
+
+            fecha: document.querySelector("#fecha").value,
+
+            disponible:
+                document.querySelector("#disponible").value === "true"
+        });
+
+
+        // Añadimos el videojuego a la biblioteca.
         const nuevoId = biblioteca.anadir(nuevoVideojuego);
 
+
         if (nuevoId === false) {
+
             mostrarMensaje(
                 "Revisa el título (3-50 caracteres) y completa todos los campos.",
                 "error"
             );
+
             return;
         }
-        //Al añadir el videojuego, limpia el formulario y muestra un mensaje
+
+
+        // Limpiamos el formulario.
         limpiarFormulario();
-        mostrarMensaje("Videojuego añadido correctamente.", "correcto");
+
+        mostrarMensaje(
+            "Videojuego añadido correctamente.",
+            "correcto"
+        );
+
+        // Actualizamos las tarjetas y las estadísticas.
         actualizar();
     });
+
 
     // Primera actualización al abrir la página.
     actualizar();
 }
+
 
 // Este módulo es el único que se carga desde index.html.
 iniciarAplicacion();

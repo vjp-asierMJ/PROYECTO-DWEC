@@ -61,12 +61,70 @@ export class Biblioteca {
         return buscarPorTexto(this._videojuegos, texto);
     }
 
+     /**
+     * Calcula las estadísticas de la biblioteca.
+     * Utiliza map, filter y reduce, sin utilizar for.
+     */
+    estadisticas() {
+
+        // Si no hay videojuegos, devuelve null.
+        if (this._videojuegos.length === 0) {
+            return null;
+        }
+
+        const total = this._videojuegos.length;
+
+        // FILTER: cuenta los videojuegos disponibles.
+        const disponibles = this._videojuegos.filter(
+            (videojuego) => videojuego.disponible
+        ).length;
+
+        // MAP: obtiene el año de lanzamiento de cada videojuego.
+        const aniosLanzamiento = this._videojuegos.map(
+            (videojuego) =>
+                new Date(videojuego.fecha + "T00:00").getFullYear()
+        );
+
+        // REDUCE: suma todos los años de lanzamiento.
+        const sumaAnios = aniosLanzamiento.reduce(
+            (suma, anio) => suma + anio,
+            0
+        );
+
+        // REDUCE: encuentra el videojuego más reciente.
+        const masReciente = this._videojuegos.reduce(
+            (mayor, videojuego) =>
+                videojuego.fecha > mayor.fecha ? videojuego : mayor
+        );
+
+        // REDUCE: encuentra el videojuego más antiguo.
+        const masAntiguo = this._videojuegos.reduce(
+            (menor, videojuego) =>
+                videojuego.fecha < menor.fecha ? videojuego : menor
+        );
+
+        return {
+            totalVideojuegos: total,
+
+            videojuegosDisponibles: disponibles,
+
+            videojuegosNoDisponibles: total - disponibles,
+
+            anioMedioLanzamiento: sumaAnios / total,
+
+            videojuegoMasReciente: masReciente,
+
+            videojuegoMasAntiguo: masAntiguo
+        };
+
     /**
      * Crea una biblioteca a partir de los datos iniciales.
      * Convierte cada objeto en una instancia de Videojuego.
      * @param {Object[]} datos - Array de objetos con los datos iniciales.
      * @returns {Biblioteca} Biblioteca creada con los videojuegos.
      */
+    }
+
     static desdeDatos(datos) {
         const videojuegos = [];
 

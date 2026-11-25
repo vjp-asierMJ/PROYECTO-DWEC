@@ -176,7 +176,7 @@ export function eliminarPorId(lista, id) {
    Calcula estadísticas de la colección y devuelve un objeto.
    Si la lista está vacía, las fechas extremas y la media quedan a null.
 */
-export function estadisticas(lista) {
+/*export function estadisticas(lista) {
     let disponibles = 0;
     let sumaAnios = 0;
     let masReciente = null;
@@ -215,7 +215,7 @@ export function estadisticas(lista) {
         videojuegoMasReciente: masReciente,
         videojuegoMasAntiguo: masAntiguo
     };
-}
+}/*
 
 // -----------------------------------------------------
 // 4. ORDENACIÓN
